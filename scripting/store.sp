@@ -10,8 +10,6 @@
 #define PLUGIN_VERSION "1.1"
 #define PLUGIN_URL ""
 
-#define SERVER_LOCK_IP ""
-
 //////////////////////////////
 //			INCLUDES		//
 //////////////////////////////
@@ -201,16 +199,6 @@ public Plugin:myinfo =
 public OnPluginStart()
 {
 	RegPluginLibrary("store_zephyrus");
-
-	if(strcmp(SERVER_LOCK_IP, "") != 0)
-	{
-		new String:m_szIP[64];
-		new m_unIP = GetConVarInt(FindConVar("hostip"));
-		Format(STRING(m_szIP), "%d.%d.%d.%d:%d", (m_unIP >> 24) & 0x000000FF, (m_unIP >> 16) & 0x000000FF, (m_unIP >> 8) & 0x000000FF, m_unIP & 0x000000FF, GetConVarInt(FindConVar("hostport")));
-
-		if(strcmp(SERVER_LOCK_IP, m_szIP)!=0)
-			SetFailState("GTFO");
-	}
 
 	// Identify the game
 	GetGameFolderName(STRING(g_szGameDir));
