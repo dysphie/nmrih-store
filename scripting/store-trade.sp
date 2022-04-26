@@ -225,7 +225,7 @@ public MenuHandler_SelectPlayer(Handle:menu, MenuAction:action, client, param2)
 			return;
 		}
 
-		g_iTradeCooldown[client] = GetTime() + g_eCvars[g_cvarTradeCooldown][aCache];
+		g_iTradeCooldown[client] = GetTime() + g_eCvars[g_cvarTradeCooldown].aCache;
 		g_iTraders[client] = GetClientUserId(target);
 
 		Chat(client, "%t", "Waiting for confirmation");
@@ -402,7 +402,7 @@ public MenuHandler_Trade(Handle:menu, MenuAction:action, client, param2)
 
 			if(g_bReady[client] && g_bReady[target])
 			{
-				g_hReadyTimers[client] = CreateTimer(0.0, Timer_ReadyTimer, g_eCvars[g_cvarTradeReadyDelay][aCache]);
+				g_hReadyTimers[client] = CreateTimer(0.0, Timer_ReadyTimer, g_eCvars[g_cvarTradeReadyDelay].aCache);
 				g_hReadyTimers[target] = g_hReadyTimers[client];
 			}
 			else if(g_hReadyTimers[client] != INVALID_HANDLE)
@@ -540,7 +540,7 @@ public Trade_OnMenu(&Handle:menu, client, itemid)
 
 public bool:Trade_OnHandler(client, String:info[], itemid)
 {
-	if(!g_eCvars[g_cvarTradeEnabled][aCache])
+	if(!g_eCvars[g_cvarTradeEnabled].aCache)
 		return false;
 
 	if(strcmp(info, "add_to_offer")==0)

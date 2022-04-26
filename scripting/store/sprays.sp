@@ -103,7 +103,7 @@ public Sprays_Create(client)
 	decl Float:m_flView[3];
 	GetPlayerEyeViewPoint(client, m_flView);
 
-	if(GetVectorDistance(m_flEye, m_flView) > Float:g_eCvars[g_cvarSprayDistance][aCache])
+	if(GetVectorDistance(m_flEye, m_flView) > Float:g_eCvars[g_cvarSprayDistance].aCache)
 		return;
 
 	TE_Start("World Decal");
@@ -113,7 +113,7 @@ public Sprays_Create(client)
 
 	EmitSoundToAll("player/sprayer.wav", client, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, 0.6);
 
-	g_iSprayLimit[client] = GetTime()+g_eCvars[g_cvarSprayLimit][aCache];
+	g_iSprayLimit[client] = GetTime()+g_eCvars[g_cvarSprayLimit].aCache;
 }
 
 

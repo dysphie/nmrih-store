@@ -6,16 +6,16 @@
 #include <zephstocks>
 #endif
 
-enum Glow
+enum struct Glow
 {
-	String:szColor[16],
-	String:szBrightness[8],
-	String:szStyle[4],
-	Float:flRadius,
-	Float:flDistance
+	char szColor[16];
+	char szBrightness[8];
+	char szStyle[4];
+	float flRadius;
+	float flDistance;
 }
 
-new g_eGlow[STORE_MAX_ITEMS][Glow];
+Glow g_eGlow[STORE_MAX_ITEMS];
 new g_iGlow = 0;
 new g_unClientGlow[MAXPLAYERS+1] = {INVALID_ENT_REFERENCE, ...};
 new g_unSelectedGlow[MAXPLAYERS+1]={-1,...};
@@ -46,11 +46,11 @@ public Glow_Config(&Handle:kv, itemid)
 {
 	Store_SetDataIndex(itemid, g_iGlow);
 	
-	KvGetString(kv, "color", g_eGlow[g_iGlow][szColor], 16);
-	KvGetString(kv, "brightness", g_eGlow[g_iGlow][szBrightness], 8, "5");
-	KvGetString(kv, "style", g_eGlow[g_iGlow][szStyle], 4, "0");
-	g_eGlow[g_iGlow][flDistance]=KvGetFloat(kv, "distance", 200.0);
-	g_eGlow[g_iGlow][flRadius]=KvGetFloat(kv, "distance", 100.0);
+	KvGetString(kv, "color", g_eGlow[g_iGlow].szColor, 16);
+	KvGetString(kv, "brightness", g_eGlow[g_iGlow].szBrightness, 8, "5");
+	KvGetString(kv, "style", g_eGlow[g_iGlow].szStyle, 4, "0");
+	g_eGlow[g_iGlow].flDistance=KvGetFloat(kv, "distance", 200.0);
+	g_eGlow[g_iGlow].flRadius=KvGetFloat(kv, "distance", 100.0);
 	
 	++g_iGlow;
 	return true;
@@ -143,11 +143,11 @@ public CreateGlow(client)
 		GetClientAbsOrigin(client, m_flClientOrigin);
 		m_flClientOrigin[2]+=5.0;
 
-		DispatchKeyValue(m_unEnt, "_light", g_eGlow[m_iData][szColor]); 
-		DispatchKeyValue(m_unEnt, "brightness", g_eGlow[m_iData][szBrightness]); 
-		DispatchKeyValueFloat(m_unEnt, "spotlight_radius", g_eGlow[m_iData][flRadius]); 
-		DispatchKeyValueFloat(m_unEnt, "distance", g_eGlow[m_iData][flDistance]); 
-		DispatchKeyValue(m_unEnt, "style", g_eGlow[m_iData][szStyle]);  
+		DispatchKeyValue(m_unEnt, "_light", g_eGlow[m_iData].szColor); 
+		DispatchKeyValue(m_unEnt, "brightness", g_eGlow[m_iData].szBrightness); 
+		DispatchKeyValueFloat(m_unEnt, "spotlight_radius", g_eGlow[m_iData].flRadius); 
+		DispatchKeyValueFloat(m_unEnt, "distance", g_eGlow[m_iData].flDistance); 
+		DispatchKeyValue(m_unEnt, "style", g_eGlow[m_iData].szStyle);  
 
 		DispatchSpawn(m_unEnt); 
 		TeleportEntity(m_unEnt, m_flClientOrigin, NULL_VECTOR, NULL_VECTOR); 

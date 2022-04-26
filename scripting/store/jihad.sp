@@ -6,16 +6,16 @@
 #include <zephstocks>
 #endif
 
-enum Jihad
+enum struct Jihad
 {
-	Float:flRadius,
-	Float:flDamage,
-	bool:bSilent,
-	Float:flDelay,
-	Float:flFailrate,
+	float flRadius;
+	float flDamage;
+	bool bSilent;
+	float flDelay;
+	float flFailrate;
 }
 
-new g_eJihads[STORE_MAX_ITEMS][Jihad];
+Jihad g_eJihads[STORE_MAX_ITEMS];
 
 new g_iJihads = 0;
 new g_iExplosion = -1;
@@ -42,17 +42,17 @@ public Jihad_OnPluginStart()
 public Jihad_OnConfigsExecuted()
 {
 	new String:m_szSound[PLATFORM_MAX_PATH];
-	if(g_eCvars[g_cvarJihadExplosionSound][sCache][0]!=0 && FileExists(g_eCvars[g_cvarJihadExplosionSound][sCache], true))
+	if(g_eCvars[g_cvarJihadExplosionSound].sCache[0]!=0 && FileExists(g_eCvars[g_cvarJihadExplosionSound].sCache, true))
 	{
-		PrecacheSound(g_eCvars[g_cvarJihadExplosionSound][sCache]);
-		Format(STRING(m_szSound), "sound/%s", g_eCvars[g_cvarJihadExplosionSound][sCache]);
+		PrecacheSound(g_eCvars[g_cvarJihadExplosionSound].sCache);
+		Format(STRING(m_szSound), "sound/%s", g_eCvars[g_cvarJihadExplosionSound].sCache);
 		AddFileToDownloadsTable(m_szSound);
 	}
 	
-	if(g_eCvars[g_cvarJihadBeforeSound][sCache][0]!=0 && FileExists(g_eCvars[g_cvarJihadBeforeSound][sCache], true))
+	if(g_eCvars[g_cvarJihadBeforeSound].sCache[0]!=0 && FileExists(g_eCvars[g_cvarJihadBeforeSound].sCache, true))
 	{
-		PrecacheSound(g_eCvars[g_cvarJihadBeforeSound][sCache]);
-		Format(STRING(m_szSound), "sound/%s", g_eCvars[g_cvarJihadBeforeSound][sCache]);
+		PrecacheSound(g_eCvars[g_cvarJihadBeforeSound].sCache);
+		Format(STRING(m_szSound), "sound/%s", g_eCvars[g_cvarJihadBeforeSound].sCache);
 		AddFileToDownloadsTable(m_szSound);
 	}
 }
@@ -71,11 +71,11 @@ public Jihad_Config(&Handle:kv, itemid)
 {
 	Store_SetDataIndex(itemid, g_iJihads);
 	
-	g_eJihads[g_iJihads][flRadius] = KvGetFloat(kv, "radius");
-	g_eJihads[g_iJihads][flDamage] = KvGetFloat(kv, "damage");
-	g_eJihads[g_iJihads][bSilent] = (KvGetNum(kv, "silent")?true:false);
-	g_eJihads[g_iJihads][flDelay] = KvGetFloat(kv, "delay");
-	g_eJihads[g_iJihads][flFailrate] = KvGetFloat(kv, "failrate");
+	g_eJihads[g_iJihads].flRadius = KvGetFloat(kv, "radius");
+	g_eJihads[g_iJihads].flDamage = KvGetFloat(kv, "damage");
+	g_eJihads[g_iJihads].bSilent = (KvGetNum(kv, "silent")?true:false);
+	g_eJihads[g_iJihads].flDelay = KvGetFloat(kv, "delay");
+	g_eJihads[g_iJihads].flFailrate = KvGetFloat(kv, "failrate");
 
 	++g_iJihads;
 	return true;
@@ -85,22 +85,22 @@ public Jihad_Equip(client, id)
 {
 	new m_iData = Store_GetDataIndex(id);
 	
-	if(g_eCvars[g_cvarJihadTeam][aCache] != 0 && g_eCvars[g_cvarJihadTeam][aCache]!=GetClientTeam(client))
+	if(g_eCvars[g_cvarJihadTeam].aCache != 0 && g_eCvars[g_cvarJihadTeam].aCache!=GetClientTeam(client))
 	{
 		Chat(client, "%t", "Jihad Wrong Team");
 		return 1;
 	}
 
-	if(!g_eJihads[m_iData][bSilent])
-		if(g_eCvars[g_cvarJihadBeforeSound][sCache][0]!=0)
-			EmitAmbientSound(g_eCvars[g_cvarJihadBeforeSound][sCache], NULL_VECTOR, client);
+	if(!g_eJihads[m_iData].bSilent)
+		if(g_eCvars[g_cvarJihadBeforeSound].sCache[0]!=0)
+			EmitAmbientSound(g_eCvars[g_cvarJihadBeforeSound].sCache, NULL_VECTOR, client);
 	
 	new Handle:data = CreateDataPack();
 	WritePackCell(data, GetClientUserId(client));
 	WritePackCell(data, m_iData);
 	ResetPack(data);
 
-	CreateTimer(g_eJihads[m_iData][flDelay], Jihad_TriggerBomb, data);
+	CreateTimer(g_eJihads[m_iData].flDelay, Jihad_TriggerBomb, data);
 
 	return 0;
 }
@@ -122,14 +122,14 @@ public Action:Jihad_TriggerBomb(Handle:timer, any:data)
 
 	
 
-	if(GetRandomFloat() <= g_eJihads[m_iData][flFailrate])
+	if(GetRandomFloat() <= g_eJihads[m_iData].flFailrate)
 	{
 		Chat(client, "%t", "Jihad Failed");
 		return Plugin_Stop;
 	}
 	
-	if(g_eCvars[g_cvarJihadBeforeSound][sCache][0]!=0)
-		EmitAmbientSound(g_eCvars[g_cvarJihadExplosionSound][sCache], NULL_VECTOR, client);
+	if(g_eCvars[g_cvarJihadBeforeSound].sCache[0]!=0)
+		EmitAmbientSound(g_eCvars[g_cvarJihadExplosionSound].sCache, NULL_VECTOR, client);
 	
 	new Float:m_flPos[3];
 	new Float:m_flPos2[3];
@@ -155,13 +155,13 @@ public Action:Jihad_TriggerBomb(Handle:timer, any:data)
 	new Float:m_flDistance;
 	LoopAlivePlayers(i)
 	{
-		if(!g_eCvars[g_cvarJihadTK][aCache] && GetClientTeam(i)==GetClientTeam(client))
+		if(!g_eCvars[g_cvarJihadTK].aCache && GetClientTeam(i)==GetClientTeam(client))
 			continue;
 		
 		GetClientAbsOrigin(i, m_flPos2);
 		m_flDistance = GetVectorDistance(m_flPos, m_flPos2);
 		
-		if(m_flDistance <= g_eJihads[m_iData][flRadius])
+		if(m_flDistance <= g_eJihads[m_iData].flRadius)
 		{
 			MakeVectorFromPoints(m_flPos, m_flPos2, m_flPush);
 			ScaleVector(m_flPush, 50.0);
@@ -170,7 +170,7 @@ public Action:Jihad_TriggerBomb(Handle:timer, any:data)
 			m_hData = CreateDataPack();
 			WritePackCell(m_hData, client);
 			WritePackCell(m_hData, i);
-			WritePackFloat(m_hData, g_eJihads[m_iData][flDamage]*((g_eJihads[m_iData][flRadius]-m_flDistance)/g_eJihads[m_iData][flRadius]));
+			WritePackFloat(m_hData, g_eJihads[m_iData].flDamage*((g_eJihads[m_iData].flRadius-m_flDistance)/g_eJihads[m_iData].flRadius));
 			WritePackFloat(m_hData, m_flPush[0]);
 			WritePackFloat(m_hData, m_flPush[1]);
 			WritePackFloat(m_hData, m_flPush[2]);

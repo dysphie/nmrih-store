@@ -13,20 +13,20 @@
 new bool:GAME_TF2 = false;
 #endif
 
-enum Hat
+enum struct Hat
 {
-	String:szModel[PLATFORM_MAX_PATH],
-	String:szAttachment[64],
-	Float:fPosition[3],
-	Float:fAngles[3],
-	bool:bBonemerge,
-	iTeam,
-	iSlot
+	char szModel[PLATFORM_MAX_PATH];
+	char szAttachment[64];
+	float fPosition[3];
+	float fAngles[3];
+	bool bBonemerge;
+	int iTeam;
+	int iSlot;
 }
 
 new Handle:g_hLookupAttachment = INVALID_HANDLE;
 
-new g_eHats[STORE_MAX_ITEMS][Hat];
+Hat g_eHats[STORE_MAX_ITEMS];
 
 new g_iClientHats[MAXPLAYERS+1][STORE_MAX_SLOTS];
 new g_iHats = 0;
@@ -95,25 +95,25 @@ public Hats_OnMapStart()
 
 	for(new i=0;i<g_iHats;++i)
 	{
-		PrecacheModel2(g_eHats[i][szModel], true);
-		Downloader_AddFileToDownloadsTable(g_eHats[i][szModel]);
+		PrecacheModel2(g_eHats[i].szModel, true);
+		Downloader_AddFileToDownloadsTable(g_eHats[i].szModel);
 	}
 		
 	// Just in case...
-	if(FileExists(g_eCvars[g_cvarDefaultT][sCache], true))
+	if(FileExists(g_eCvars[g_cvarDefaultT].sCache, true))
 	{
 		g_bTOverride = true;
-		PrecacheModel2(g_eCvars[g_cvarDefaultT][sCache], true);
-		Downloader_AddFileToDownloadsTable(g_eCvars[g_cvarDefaultT][sCache]);
+		PrecacheModel2(g_eCvars[g_cvarDefaultT].sCache, true);
+		Downloader_AddFileToDownloadsTable(g_eCvars[g_cvarDefaultT].sCache);
 	}
 	else
 		g_bTOverride = false;
 		
-	if(FileExists(g_eCvars[g_cvarDefaultCT][sCache], true))
+	if(FileExists(g_eCvars[g_cvarDefaultCT].sCache, true))
 	{
 		g_bCTOverride = true;
-		PrecacheModel2(g_eCvars[g_cvarDefaultCT][sCache], true);
-		Downloader_AddFileToDownloadsTable(g_eCvars[g_cvarDefaultCT][sCache]);
+		PrecacheModel2(g_eCvars[g_cvarDefaultCT].sCache, true);
+		Downloader_AddFileToDownloadsTable(g_eCvars[g_cvarDefaultCT].sCache);
 	}
 	else
 		g_bCTOverride = false;
@@ -128,29 +128,29 @@ public Hats_Config(&Handle:kv, itemid)
 {
 	Store_SetDataIndex(itemid, g_iHats);
 	decl Float:m_fTemp[3];
-	KvGetString(kv, "model", g_eHats[g_iHats][szModel], PLATFORM_MAX_PATH);
+	KvGetString(kv, "model", g_eHats[g_iHats].szModel, PLATFORM_MAX_PATH);
 	KvGetVector(kv, "position", m_fTemp);
-	g_eHats[g_iHats][fPosition] = m_fTemp;
+	g_eHats[g_iHats].fPosition = m_fTemp;
 	KvGetVector(kv, "angles", m_fTemp);
-	g_eHats[g_iHats][fAngles] = m_fTemp;
-	g_eHats[g_iHats][bBonemerge] = (KvGetNum(kv, "bonemerge", 0)?true:false);
-	g_eHats[g_iHats][iTeam] = KvGetNum(kv, "team", 0);
-	g_eHats[g_iHats][iSlot] = KvGetNum(kv, "slot");
-	KvGetString(kv, "attachment", g_eHats[g_iHats][szAttachment], 64, "");
+	g_eHats[g_iHats].fAngles = m_fTemp;
+	g_eHats[g_iHats].bBonemerge = (KvGetNum(kv, "bonemerge", 0)?true:false);
+	g_eHats[g_iHats].iTeam = KvGetNum(kv, "team", 0);
+	g_eHats[g_iHats].iSlot = KvGetNum(kv, "slot");
+	KvGetString(kv, "attachment", g_eHats[g_iHats].szAttachment, 64, "");
 
-	if(strcmp(g_eHats[g_iHats][szAttachment], "")==0)
+	if(strcmp(g_eHats[g_iHats].szAttachment, "")==0)
 	{
 		if(GAME_CSGO)
 		{
-			strcopy(g_eHats[g_iHats][szAttachment], 64, "facemask");
-			g_eHats[g_iHats][fPosition][2] -= 4.0;
+			strcopy(g_eHats[g_iHats].szAttachment, 64, "facemask");
+			g_eHats[g_iHats].fPosition[2] -= 4.0;
 		}
 		else
-			strcopy(g_eHats[g_iHats][szAttachment], 64, "forward");
+			strcopy(g_eHats[g_iHats].szAttachment, 64, "forward");
 	}
 
 	
-	if(!(FileExists(g_eHats[g_iHats][szModel], true)))
+	if(!(FileExists(g_eHats[g_iHats].szModel, true)))
 		return false;
 		
 	++g_iHats;
@@ -162,16 +162,16 @@ public Hats_Equip(client, id)
 	if(!IsClientInGame(client) || !IsPlayerAlive(client) || !(2<=GetClientTeam(client)<=3))
 		return -1;
 	new m_iData = Store_GetDataIndex(id);
-	RemoveHat(client, g_eHats[m_iData][iSlot]);
+	RemoveHat(client, g_eHats[m_iData].iSlot);
 	CreateHat(client, id);
-	return g_eHats[m_iData][iSlot];
+	return g_eHats[m_iData].iSlot;
 }
 
 public Hats_Remove(client, id)
 {
 	new m_iData = Store_GetDataIndex(id);
-	RemoveHat(client, g_eHats[m_iData][iSlot]);
-	return g_eHats[m_iData][iSlot];
+	RemoveHat(client, g_eHats[m_iData].iSlot);
+	return g_eHats[m_iData].iSlot;
 }
 
 public Action:Hats_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
@@ -219,18 +219,18 @@ CreateHat(client, itemid=-1, slot=0)
 		new m_iData = Store_GetDataIndex(m_iEquipped);
 		new m_iTeam = GetClientTeam(client);
 		
-		if(g_eHats[m_iData][iTeam] != 0 && m_iTeam!=g_eHats[m_iData][iTeam])
+		if(g_eHats[m_iData].iTeam != 0 && m_iTeam!=g_eHats[m_iData].iTeam)
 			return;
 		
 		// If the model doesn't support hats, set the model to one that does
-		if(!LookupAttachment(client, g_eHats[m_iData][szAttachment]))
+		if(!LookupAttachment(client, g_eHats[m_iData].szAttachment))
 		{
-			if(g_eCvars[g_cvarOverrideEnabled][aCache])
+			if(g_eCvars[g_cvarOverrideEnabled].aCache)
 			{
 				if(m_iTeam==2 && g_bTOverride)
-					SetEntityModel(client, g_eCvars[g_cvarDefaultT][sCache]);
+					SetEntityModel(client, g_eCvars[g_cvarDefaultT].sCache);
 				else if(m_iTeam==3 && g_bCTOverride)
-					SetEntityModel(client, g_eCvars[g_cvarDefaultCT][sCache]);
+					SetEntityModel(client, g_eCvars[g_cvarDefaultCT].sCache);
 				else
 					return;
 			}
@@ -247,14 +247,14 @@ CreateHat(client, itemid=-1, slot=0)
 		GetClientAbsOrigin(client,m_fHatOrigin);
 		GetClientAbsAngles(client,m_fHatAngles);
 		
-		m_fHatAngles[0] += g_eHats[m_iData][fAngles][0];
-		m_fHatAngles[1] += g_eHats[m_iData][fAngles][1];
-		m_fHatAngles[2] += g_eHats[m_iData][fAngles][2];
+		m_fHatAngles[0] += g_eHats[m_iData].fAngles[0];
+		m_fHatAngles[1] += g_eHats[m_iData].fAngles[1];
+		m_fHatAngles[2] += g_eHats[m_iData].fAngles[2];
 
 		new Float:m_fOffset[3];
-		m_fOffset[0] = g_eHats[m_iData][fPosition][0];
-		m_fOffset[1] = g_eHats[m_iData][fPosition][1];
-		m_fOffset[2] = g_eHats[m_iData][fPosition][2];
+		m_fOffset[0] = g_eHats[m_iData].fPosition[0];
+		m_fOffset[1] = g_eHats[m_iData].fPosition[1];
+		m_fOffset[2] = g_eHats[m_iData].fPosition[2];
 
 		GetAngleVectors(m_fHatAngles, m_fForward, m_fRight, m_fUp);
 
@@ -264,19 +264,19 @@ CreateHat(client, itemid=-1, slot=0)
 		
 		// Create the hat entity
 		new m_iEnt = CreateEntityByName("prop_dynamic_override");
-		DispatchKeyValue(m_iEnt, "model", g_eHats[m_iData][szModel]);
+		DispatchKeyValue(m_iEnt, "model", g_eHats[m_iData].szModel);
 		DispatchKeyValue(m_iEnt, "spawnflags", "256");
 		DispatchKeyValue(m_iEnt, "solid", "0");
 		SetEntPropEnt(m_iEnt, Prop_Send, "m_hOwnerEntity", client);
 		
-		if(g_eHats[m_iData][bBonemerge])
+		if(g_eHats[m_iData].bBonemerge)
 			Bonemerge(m_iEnt);
 		
 		DispatchSpawn(m_iEnt);	
 		AcceptEntityInput(m_iEnt, "TurnOn", m_iEnt, m_iEnt, 0);
 		
 		// Save the entity index
-		g_iClientHats[client][g_eHats[m_iData][iSlot]]=m_iEnt;
+		g_iClientHats[client][g_eHats[m_iData].iSlot]=m_iEnt;
 		
 		// We don't want the client to see his own hat
 		SDKHook(m_iEnt, SDKHook_SetTransmit, Hook_SetTransmit);
@@ -287,7 +287,7 @@ CreateHat(client, itemid=-1, slot=0)
 		SetVariantString("!activator");
 		AcceptEntityInput(m_iEnt, "SetParent", client, m_iEnt, 0);
 		
-		SetVariantString(g_eHats[m_iData][szAttachment]);
+		SetVariantString(g_eHats[m_iData].szAttachment);
 		AcceptEntityInput(m_iEnt, "SetParentAttachmentMaintainOffset", m_iEnt, m_iEnt, 0);
 	}
 }
@@ -356,7 +356,7 @@ public Store_OnClientModelChanged(client, String:model[])
 	if(!IsClientInGame(client) || !IsPlayerAlive(client))
 		return;
 
-	if(strcmp(model, g_eCvars[g_cvarDefaultT][sCache])==0 || strcmp(model, g_eCvars[g_cvarDefaultCT][sCache])==0)
+	if(strcmp(model, g_eCvars[g_cvarDefaultT].sCache)==0 || strcmp(model, g_eCvars[g_cvarDefaultCT].sCache)==0)
 		return;
 
 	if(!LookupAttachment(client, "forward"))
@@ -373,7 +373,7 @@ public Store_OnClientModelChanged(client, String:model[])
 		}
 		
 		if(m_bHasHats)
-			if(g_eCvars[g_cvarOverrideEnabled][aCache])
+			if(g_eCvars[g_cvarOverrideEnabled].aCache)
 				Chat(client, "%t", "Override Enabled");
 			else
 				Chat(client, "%t", "Override Disabled");

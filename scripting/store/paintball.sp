@@ -30,10 +30,14 @@ public Paintball_OnPluginStart()
 
 	if(GAME_TF2)
 		return;
+	
+	if (!HookEventEx("bullet_impact", Paintball_BulletImpact))
+	{
+		LogError("Could not find bullet_impact event. Paintball will be unavailable");
+		return;
+	}
 
 	Store_RegisterHandler("paintball", "", Paintball_OnMapStart, Paintball_Reset, Paintball_Config, Paintball_Equip, Paintball_Remove, true);
-	
-	HookEvent("bullet_impact", Paintball_BulletImpact);
 }
 
 public Paintball_OnMapStart()

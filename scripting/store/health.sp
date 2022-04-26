@@ -70,7 +70,7 @@ public Health_Config(&Handle:kv, itemid)
 
 public Health_Equip(client, id)
 {
-	if(g_iRoundLimit[client] == g_eCvars[g_cvarHealthRoundLimit][aCache])
+	if(g_iRoundLimit[client] == g_eCvars[g_cvarHealthRoundLimit].aCache)
 	{
 		Chat(client, "%t", "Health Round Limit");
 		return 1;
@@ -78,8 +78,8 @@ public Health_Equip(client, id)
 
 	new m_iData = Store_GetDataIndex(id);
 	new m_iHealth = GetClientHealth(client)+g_iHealths[m_iData];
-	if(g_eCvars[g_cvarMaximumHealth][aCache] != 0 && m_iHealth > g_eCvars[g_cvarMaximumHealth][aCache])
-		m_iHealth = g_eCvars[g_cvarMaximumHealth][aCache];
+	if(g_eCvars[g_cvarMaximumHealth].aCache != 0 && m_iHealth > g_eCvars[g_cvarMaximumHealth].aCache)
+		m_iHealth = g_eCvars[g_cvarMaximumHealth].aCache;
 	SetEntityHealth(client, m_iHealth);
 	++g_iRoundLimit[client];
 	return 0;

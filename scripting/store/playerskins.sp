@@ -11,17 +11,17 @@ new GAME_TF2 = false;
 native bool:ZR_IsClientZombie(client);
 new bool:g_bZombieMode = false;
 
-enum PlayerSkin
+enum struct PlayerSkin
 {
-	String:szModel[PLATFORM_MAX_PATH],
-	String:szArms[PLATFORM_MAX_PATH],
-	iSkin,
-	bool:bTemporary,
-	iTeam,
-	nModelIndex
+	char szModel[PLATFORM_MAX_PATH];
+	char szArms[PLATFORM_MAX_PATH];
+	int iSkin;
+	bool bTemporary;
+	int iTeam;
+	int nModelIndex;
 }
 
-new g_ePlayerSkins[STORE_MAX_ITEMS][PlayerSkin];
+PlayerSkin g_ePlayerSkins[STORE_MAX_ITEMS];
 
 new g_iPlayerSkins = 0;
 new g_iTempSkins[MAXPLAYERS+1];
@@ -78,30 +78,30 @@ public PlayerSkins_OnMapStart()
 {
 	for(new i=0;i<g_iPlayerSkins;++i)
 	{
-		g_ePlayerSkins[i][nModelIndex] = PrecacheModel2(g_ePlayerSkins[i][szModel], true);
-		Downloader_AddFileToDownloadsTable(g_ePlayerSkins[i][szModel]);
+		g_ePlayerSkins[i].nModelIndex = PrecacheModel2(g_ePlayerSkins[i].szModel, true);
+		Downloader_AddFileToDownloadsTable(g_ePlayerSkins[i].szModel);
 
-		if(g_ePlayerSkins[i][szArms][0]!=0)
+		if(g_ePlayerSkins[i].szArms[0]!=0)
 		{
-			PrecacheModel2(g_ePlayerSkins[i][szArms], true);
-			Downloader_AddFileToDownloadsTable(g_ePlayerSkins[i][szArms]);
+			PrecacheModel2(g_ePlayerSkins[i].szArms, true);
+			Downloader_AddFileToDownloadsTable(g_ePlayerSkins[i].szArms);
 		}
 	}
 
-	if(g_eCvars[g_cvarSkinForceChangeT][sCache][0] != 0 && (FileExists(g_eCvars[g_cvarSkinForceChangeT][sCache]) || FileExists(g_eCvars[g_cvarSkinForceChangeT][sCache], true)))
+	if(g_eCvars[g_cvarSkinForceChangeT].sCache[0] != 0 && (FileExists(g_eCvars[g_cvarSkinForceChangeT].sCache) || FileExists(g_eCvars[g_cvarSkinForceChangeT].sCache, true)))
 	{
 		g_bTForcedSkin = true;
-		PrecacheModel2(g_eCvars[g_cvarSkinForceChangeT][sCache], true);
-		Downloader_AddFileToDownloadsTable(g_eCvars[g_cvarSkinForceChangeT][sCache]);
+		PrecacheModel2(g_eCvars[g_cvarSkinForceChangeT].sCache, true);
+		Downloader_AddFileToDownloadsTable(g_eCvars[g_cvarSkinForceChangeT].sCache);
 	}
 	else
 		g_bTForcedSkin = false;
 		
-	if(g_eCvars[g_cvarSkinForceChangeCT][sCache][0] != 0 && (FileExists(g_eCvars[g_cvarSkinForceChangeCT][sCache]) || FileExists(g_eCvars[g_cvarSkinForceChangeCT][sCache], true)))
+	if(g_eCvars[g_cvarSkinForceChangeCT].sCache[0] != 0 && (FileExists(g_eCvars[g_cvarSkinForceChangeCT].sCache) || FileExists(g_eCvars[g_cvarSkinForceChangeCT].sCache, true)))
 	{
 		g_bCTForcedSkin = true;
-		PrecacheModel2(g_eCvars[g_cvarSkinForceChangeCT][sCache], true);
-		Downloader_AddFileToDownloadsTable(g_eCvars[g_cvarSkinForceChangeCT][sCache]);
+		PrecacheModel2(g_eCvars[g_cvarSkinForceChangeCT].sCache, true);
+		Downloader_AddFileToDownloadsTable(g_eCvars[g_cvarSkinForceChangeCT].sCache);
 	}
 	else
 		g_bCTForcedSkin = false;
@@ -135,13 +135,13 @@ public PlayerSkins_Config(&Handle:kv, itemid)
 {
 	Store_SetDataIndex(itemid, g_iPlayerSkins);
 	
-	KvGetString(kv, "model", g_ePlayerSkins[g_iPlayerSkins][szModel], PLATFORM_MAX_PATH);
-	KvGetString(kv, "arms", g_ePlayerSkins[g_iPlayerSkins][szArms], PLATFORM_MAX_PATH);
-	g_ePlayerSkins[g_iPlayerSkins][iSkin] = KvGetNum(kv, "skin");
-	g_ePlayerSkins[g_iPlayerSkins][iTeam] = KvGetNum(kv, "team");
-	g_ePlayerSkins[g_iPlayerSkins][bTemporary] = (KvGetNum(kv, "temporary")?true:false);
+	KvGetString(kv, "model", g_ePlayerSkins[g_iPlayerSkins].szModel, PLATFORM_MAX_PATH);
+	KvGetString(kv, "arms", g_ePlayerSkins[g_iPlayerSkins].szArms, PLATFORM_MAX_PATH);
+	g_ePlayerSkins[g_iPlayerSkins].iSkin = KvGetNum(kv, "skin");
+	g_ePlayerSkins[g_iPlayerSkins].iTeam = KvGetNum(kv, "team");
+	g_ePlayerSkins[g_iPlayerSkins].bTemporary = (KvGetNum(kv, "temporary")?true:false);
 	
-	if(FileExists(g_ePlayerSkins[g_iPlayerSkins][szModel], true))
+	if(FileExists(g_ePlayerSkins[g_iPlayerSkins].szModel, true))
 	{
 		++g_iPlayerSkins;
 		return true;
@@ -153,30 +153,30 @@ public PlayerSkins_Config(&Handle:kv, itemid)
 public PlayerSkins_Equip(client, id)
 {
 	new m_iData = Store_GetDataIndex(id);
-	if(g_eCvars[g_cvarSkinChangeInstant][aCache] && IsPlayerAlive(client) && GetClientTeam(client)==g_ePlayerSkins[m_iData][iTeam])
+	if(g_eCvars[g_cvarSkinChangeInstant].aCache && IsPlayerAlive(client) && GetClientTeam(client)==g_ePlayerSkins[m_iData].iTeam)
 	{
 		
-		Store_SetClientModel(client, g_ePlayerSkins[m_iData][szModel], g_ePlayerSkins[m_iData][iSkin]);
+		Store_SetClientModel(client, g_ePlayerSkins[m_iData].szModel, g_ePlayerSkins[m_iData].iSkin);
 	}
 	else
 	{
 		if(Store_IsClientLoaded(client))
 			Chat(client, "%t", "PlayerSkins Settings Changed");
 
-		if(g_ePlayerSkins[m_iData][bTemporary])
+		if(g_ePlayerSkins[m_iData].bTemporary)
 		{
 			g_iTempSkins[client] = m_iData;
 			return -1;
 		}
 	}
-	return g_ePlayerSkins[Store_GetDataIndex(id)][iTeam]-2;
+	return g_ePlayerSkins[Store_GetDataIndex(id)].iTeam-2;
 }
 
 public PlayerSkins_Remove(client, id)
 {
-	if(Store_IsClientLoaded(client) && !g_eCvars[g_cvarSkinChangeInstant][aCache])
+	if(Store_IsClientLoaded(client) && !g_eCvars[g_cvarSkinChangeInstant].aCache)
 		Chat(client, "%t", "PlayerSkins Settings Changed");
-	return g_ePlayerSkins[Store_GetDataIndex(id)][iTeam]-2;
+	return g_ePlayerSkins[Store_GetDataIndex(id)].iTeam-2;
 }
 
 public Action:PlayerSkins_PlayerSpawn(Handle:event,const String:name[],bool:dontBroadcast)
@@ -185,7 +185,7 @@ public Action:PlayerSkins_PlayerSpawn(Handle:event,const String:name[],bool:dont
 	if(!IsClientInGame(client) || !IsPlayerAlive(client) || !(2<=GetClientTeam(client)<=3))
 		return Plugin_Continue;
 			
-	new Float:Delay = Float:g_eCvars[g_cvarSkinDelay][aCache];
+	new Float:Delay = Float:g_eCvars[g_cvarSkinDelay].aCache;
 
 	if(Delay < 0 && g_bZombieMode)
 		Delay = 2.0;
@@ -214,15 +214,15 @@ public Action:PlayerSkins_PlayerSpawnPost(Handle:timer, any:userid)
 			m_iData = g_iTempSkins[client];
 		else
 			m_iData = Store_GetDataIndex(m_iEquipped);
-		Store_SetClientModel(client, g_ePlayerSkins[m_iData][szModel], g_ePlayerSkins[m_iData][iSkin], g_ePlayerSkins[m_iData][szArms]);
+		Store_SetClientModel(client, g_ePlayerSkins[m_iData].szModel, g_ePlayerSkins[m_iData].iSkin, g_ePlayerSkins[m_iData].szArms);
 	}
-	else if(g_eCvars[g_cvarSkinForceChange][aCache])
+	else if(g_eCvars[g_cvarSkinForceChange].aCache)
 	{
 		new m_iTeam = GetClientTeam(client);
 		if(m_iTeam == 2 && g_bTForcedSkin)
-			Store_SetClientModel(client, g_eCvars[g_cvarSkinForceChangeT][sCache]);
+			Store_SetClientModel(client, g_eCvars[g_cvarSkinForceChangeT].sCache);
 		else if(m_iTeam == 3 && g_bCTForcedSkin)
-			Store_SetClientModel(client, g_eCvars[g_cvarSkinForceChangeCT][sCache]);
+			Store_SetClientModel(client, g_eCvars[g_cvarSkinForceChangeCT].sCache);
 	}
 	return Plugin_Stop;
 }

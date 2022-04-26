@@ -40,7 +40,7 @@ public Jetpack_OnMapStart()
 public Jetpack_OnConfigsExecuted()
 {
 	new String:m_szCommand[64];
-	strcopy(m_szCommand[1], sizeof(m_szCommand)-1, g_eCvars[g_cvarCommand][sCache]);
+	strcopy(m_szCommand[1], sizeof(m_szCommand)-1, g_eCvars[g_cvarCommand].sCache);
 	m_szCommand[0]='+';
 	RegConsoleCmd(m_szCommand, Command_JetpackOn);
 	m_szCommand[0]='-';
@@ -100,12 +100,12 @@ public Jetpack_OnPlayerRunCmd(client, buttons)
 	new Float:m_fTime = GetGameTime();	 
 	if (g_bJetpacking[client])
 	{
-		if (g_fFuel[client] > g_eCvars[g_cvarMinimum][aCache])
+		if (g_fFuel[client] > g_eCvars[g_cvarMinimum].aCache)
 		{
 			decl Float:m_fVelocity[3];
 			GetEntPropVector(client, Prop_Data, "m_vecVelocity", m_fVelocity);
 	 
-			m_fVelocity[2] += Float:g_eCvars[g_cvarForce][aCache];
+			m_fVelocity[2] += Float:g_eCvars[g_cvarForce].aCache;
 			TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, m_fVelocity);
 	 
 			g_fFuel[client] -= m_fTime - g_fTime[client];
@@ -116,14 +116,14 @@ public Jetpack_OnPlayerRunCmd(client, buttons)
 			g_fFuel[client] = 0.0;
 	}
 		 
-	if (g_fFuel[client] < g_eCvars[g_cvarFuel][aCache])
+	if (g_fFuel[client] < g_eCvars[g_cvarFuel].aCache)
 	{
-		g_fFuel[client] += (m_fTime - g_fTime[client]) * Float:g_eCvars[g_cvarRegen][aCache];
-		if (g_fFuel[client] > g_eCvars[g_cvarFuel][aCache])
-			g_fFuel[client] = g_eCvars[g_cvarFuel][aCache];
+		g_fFuel[client] += (m_fTime - g_fTime[client]) * Float:g_eCvars[g_cvarRegen].aCache;
+		if (g_fFuel[client] > g_eCvars[g_cvarFuel].aCache)
+			g_fFuel[client] = g_eCvars[g_cvarFuel].aCache;
 	}
 	 
-	if (g_fFuel[client] != g_eCvars[g_cvarFuel][aCache] && g_fLastHUDTime[client] + 0.1 < m_fTime)
+	if (g_fFuel[client] != g_eCvars[g_cvarFuel].aCache && g_fLastHUDTime[client] + 0.1 < m_fTime)
 	{
 		PrintHintText(client, "%t", "Jetpack Fuel", g_fFuel[client]);
 		g_fLastHUDTime[client] = m_fTime;

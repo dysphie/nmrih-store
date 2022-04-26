@@ -8,18 +8,18 @@
 #include <sdkhooks>
 #endif
 
-enum GrenadeTrail
+enum struct GrenadeTrail
 {
-	String:szMaterial[PLATFORM_MAX_PATH],
-	String:szWidth[16],
-	String:szColor[16],
-	Float:fWidth,
-	iColor[4],
-	iSlot,
-	iCacheID
+	char szMaterial[PLATFORM_MAX_PATH];
+	char szWidth[16];
+	char szColor[16];
+	float fWidth;
+	int iColor[4];
+	int iSlot;
+	int iCacheID;
 }
 
-new g_eGrenadeTrails[STORE_MAX_ITEMS][GrenadeTrail];
+GrenadeTrail g_eGrenadeTrails[STORE_MAX_ITEMS];
 
 new g_iGrenadeTrails = 0;
 
@@ -45,8 +45,8 @@ public GrenadeTrails_OnMapStart()
 {
 	for(new i=0;i<g_iGrenadeTrails;++i)
 	{
-		g_eGrenadeTrails[i][iCacheID] = PrecacheModel2(g_eGrenadeTrails[i][szMaterial], true);
-		Downloader_AddFileToDownloadsTable(g_eGrenadeTrails[i][szMaterial]);
+		g_eGrenadeTrails[i].iCacheID = PrecacheModel2(g_eGrenadeTrails[i].szMaterial, true);
+		Downloader_AddFileToDownloadsTable(g_eGrenadeTrails[i].szMaterial);
 	}
 }
 
@@ -58,14 +58,14 @@ public GrenadeTrails_Reset()
 public GrenadeTrails_Config(&Handle:kv, itemid)
 {
 	Store_SetDataIndex(itemid, g_iGrenadeTrails);
-	KvGetString(kv, "material", g_eGrenadeTrails[g_iGrenadeTrails][szMaterial], PLATFORM_MAX_PATH);
-	KvGetString(kv, "width", g_eGrenadeTrails[g_iGrenadeTrails][szWidth], 16, "10.0");
-	g_eGrenadeTrails[g_iGrenadeTrails][fWidth] = KvGetFloat(kv, "width", 10.0);
-	KvGetString(kv, "color", g_eGrenadeTrails[g_iGrenadeTrails][szColor], 16, "255 255 255 255");
-	KvGetColor(kv, "color", g_eGrenadeTrails[g_iGrenadeTrails][iColor][0], g_eGrenadeTrails[g_iGrenadeTrails][iColor][1], g_eGrenadeTrails[g_iGrenadeTrails][iColor][2], g_eGrenadeTrails[g_iGrenadeTrails][iColor][3]);
-	g_eGrenadeTrails[g_iGrenadeTrails][iSlot] = KvGetNum(kv, "slot");
+	KvGetString(kv, "material", g_eGrenadeTrails[g_iGrenadeTrails].szMaterial, PLATFORM_MAX_PATH);
+	KvGetString(kv, "width", g_eGrenadeTrails[g_iGrenadeTrails].szWidth, 16, "10.0");
+	g_eGrenadeTrails[g_iGrenadeTrails].fWidth = KvGetFloat(kv, "width", 10.0);
+	KvGetString(kv, "color", g_eGrenadeTrails[g_iGrenadeTrails].szColor, 16, "255 255 255 255");
+	KvGetColor(kv, "color", g_eGrenadeTrails[g_iGrenadeTrails].iColor[0], g_eGrenadeTrails[g_iGrenadeTrails].iColor[1], g_eGrenadeTrails[g_iGrenadeTrails].iColor[2], g_eGrenadeTrails[g_iGrenadeTrails].iColor[3]);
+	g_eGrenadeTrails[g_iGrenadeTrails].iSlot = KvGetNum(kv, "slot");
 	
-	if(FileExists(g_eGrenadeTrails[g_iGrenadeTrails][szMaterial], true))
+	if(FileExists(g_eGrenadeTrails[g_iGrenadeTrails].szMaterial, true))
 	{
 		++g_iGrenadeTrails;
 		return true;
@@ -112,10 +112,10 @@ public GrenadeTrails_OnEntitySpawnedPost(entity)
 
 	// Ugh...
 	decl m_iColor[4];
-	m_iColor[0] = g_eGrenadeTrails[m_iData][iColor][0];
-	m_iColor[1] = g_eGrenadeTrails[m_iData][iColor][1];
-	m_iColor[2] = g_eGrenadeTrails[m_iData][iColor][2];
-	m_iColor[3] = g_eGrenadeTrails[m_iData][iColor][3];
-	TE_SetupBeamFollow(entity, g_eGrenadeTrails[m_iData][iCacheID], 0, 2.0, g_eGrenadeTrails[m_iData][fWidth], g_eGrenadeTrails[m_iData][fWidth], 10, m_iColor);
+	m_iColor[0] = g_eGrenadeTrails[m_iData].iColor[0];
+	m_iColor[1] = g_eGrenadeTrails[m_iData].iColor[1];
+	m_iColor[2] = g_eGrenadeTrails[m_iData].iColor[2];
+	m_iColor[3] = g_eGrenadeTrails[m_iData].iColor[3];
+	TE_SetupBeamFollow(entity, g_eGrenadeTrails[m_iData].iCacheID, 0, 2.0, g_eGrenadeTrails[m_iData].fWidth, g_eGrenadeTrails[m_iData].fWidth, 10, m_iColor);
 	TE_SendToAll();
 }

@@ -23,14 +23,14 @@ new g_iClientClasses[MAXPLAYERS+1][2];
 new g_cvarDefaultHumanClass = -1;
 new g_cvarDefaultZombieClass = -1;
 
-enum ZRClass
+enum struct ZRClass
 {
-	String:szClass[64],
-	bool:bZombie,
-	unIndex
+	char szClass[64];
+	bool bZombie;
+	int unIndex;
 }
 
-new g_eZRClasses[STORE_MAX_ITEMS][ZRClass];
+ZRClass g_eZRClasses[STORE_MAX_ITEMS];
 
 new g_iZRClasses = 0;
 
@@ -99,10 +99,10 @@ public ZRClass_Config(&Handle:kv, itemid)
 
 	Store_SetDataIndex(itemid, g_iZRClasses);
 	
-	KvGetString(kv, "class", g_eZRClasses[g_iZRClasses][szClass], 64);
-	g_eZRClasses[g_iZRClasses][bZombie] = (KvGetNum(kv, "zombie")?true:false);
+	KvGetString(kv, "class", g_eZRClasses[g_iZRClasses].szClass, 64);
+	g_eZRClasses[g_iZRClasses].bZombie = (KvGetNum(kv, "zombie")?true:false);
 	
-	if((g_eZRClasses[g_iZRClasses][unIndex] = ZR_GetClassByName(g_eZRClasses[g_iZRClasses][szClass]))!=-1)
+	if((g_eZRClasses[g_iZRClasses].unIndex = ZR_GetClassByName(g_eZRClasses[g_iZRClasses].szClass))!=-1)
 	{
 		++g_iZRClasses;
 		return true;
@@ -114,24 +114,24 @@ public ZRClass_Config(&Handle:kv, itemid)
 public ZRClass_Equip(client, id)
 {
 	new m_iData = Store_GetDataIndex(id);
-	g_iClientClasses[client][g_eZRClasses[m_iData][bZombie]] = g_eZRClasses[m_iData][unIndex];
+	g_iClientClasses[client][g_eZRClasses[m_iData].bZombie] = g_eZRClasses[m_iData].unIndex;
 
-	ZR_SelectClientClass(client, g_eZRClasses[m_iData][unIndex], false, false);
+	ZR_SelectClientClass(client, g_eZRClasses[m_iData].unIndex, false, false);
 
-	return g_eZRClasses[m_iData][bZombie];
+	return g_eZRClasses[m_iData].bZombie;
 }
 
 public ZRClass_Remove(client, id)
 {
 	new m_iData = Store_GetDataIndex(id);
-	g_iClientClasses[client][g_eZRClasses[m_iData][bZombie]] = -1;
+	g_iClientClasses[client][g_eZRClasses[m_iData].bZombie] = -1;
 
-	if(g_eZRClasses[m_iData][bZombie])
-		ZR_SelectClientClass(client, ZR_GetClassByName(g_eCvars[g_cvarDefaultZombieClass][sCache]), false, false);
+	if(g_eZRClasses[m_iData].bZombie)
+		ZR_SelectClientClass(client, ZR_GetClassByName(g_eCvars[g_cvarDefaultZombieClass].sCache), false, false);
 	else
-		ZR_SelectClientClass(client, ZR_GetClassByName(g_eCvars[g_cvarDefaultHumanClass][sCache]), false, false);
+		ZR_SelectClientClass(client, ZR_GetClassByName(g_eCvars[g_cvarDefaultHumanClass].sCache), false, false);
 
-	return g_eZRClasses[Store_GetDataIndex(id)][bZombie];
+	return g_eZRClasses[Store_GetDataIndex(id)].bZombie;
 }
 
 public ZR_OnClientInfected(client, attacker, bool:motherInfect, bool:respawnOverride, bool:respawn)

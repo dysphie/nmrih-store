@@ -33,20 +33,27 @@ public Tracers_OnPluginStart()
 #endif
 
 	if(GAME_TF2)
+	{
 		return;
-
+	}
+	
+	if (!HookEventEx("bullet_impact", Tracers_BulletImpact))
+	{
+		LogError("Could not find bullet_impact event. Tracers will be unavailable");
+		return;
+	}
+	
 	g_cvarTracerMaterial = RegisterConVar("sm_store_tracer_material", "materials/sprites/laserbeam.vmt", "Material to be used with tracers", TYPE_STRING);
 	g_cvarTracerLife = RegisterConVar("sm_store_tracer_life", "0.5", "Life of a tracer in seconds", TYPE_FLOAT);
 	g_cvarTracerWidth = RegisterConVar("sm_store_tracer_width", "1.0", "Life of a tracer in seconds", TYPE_FLOAT);
 	
 	Store_RegisterHandler("tracer", "color", Tracers_OnMapStart, Tracers_Reset, Tracers_Config, Tracers_Equip, Tracers_Remove, true);
-	
-	HookEvent("bullet_impact", Tracers_BulletImpact);
+
 }
 
 public Tracers_OnMapStart()
 {
-	g_iBeam = PrecacheModel2(g_eCvars[g_cvarTracerMaterial][sCache], true);
+	g_iBeam = PrecacheModel2(g_eCvars[g_cvarTracerMaterial].sCache, true);
 }
 
 public Tracers_Reset()
@@ -94,7 +101,7 @@ public Action:Tracers_BulletImpact(Handle:event,const String:name[],bool:dontBro
 		m_fImpact[1] = GetEventFloat(event, "y");
 		m_fImpact[2] = GetEventFloat(event, "z");
 		
-		TE_SetupBeamPoints(m_fOrigin, m_fImpact, g_iBeam, 0, 0, 0, Float:g_eCvars[g_cvarTracerLife][aCache], Float:g_eCvars[g_cvarTracerWidth][aCache], Float:g_eCvars[g_cvarTracerWidth][aCache], 1, 0.0, g_aColors[idx], 0);
+		TE_SetupBeamPoints(m_fOrigin, m_fImpact, g_iBeam, 0, 0, 0, Float:g_eCvars[g_cvarTracerLife].aCache, Float:g_eCvars[g_cvarTracerWidth].aCache, Float:g_eCvars[g_cvarTracerWidth].aCache, 1, 0.0, g_aColors[idx], 0);
 		TE_SendToAll();
 	}
 

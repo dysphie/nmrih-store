@@ -14,17 +14,18 @@ new bool:GAME_TF2 = false;
 #endif
 #include <hidetrails>
 
-enum Trail
+enum struct Trail
 {
-	String:szMaterial[PLATFORM_MAX_PATH],
-	String:szWidth[16],
-	String:szColor[16],
-	Float:fWidth,
-	iColor[4],
-	iSlot,
-	iCacheID
+	char szMaterial[PLATFORM_MAX_PATH];
+	char szWidth[16];
+	char szColor[16];
+	float fWidth;
+	int iColor[4];
+	int iSlot;
+	int iCacheID;
 }
-new g_eTrails[STORE_MAX_ITEMS][Trail];
+
+Trail g_eTrails[STORE_MAX_ITEMS];
 
 new g_iTrails = 0;
 new g_iClientTrails[MAXPLAYERS+1][STORE_MAX_SLOTS];
@@ -73,8 +74,8 @@ public Trails_OnMapStart()
 
 	for(new i=0;i<g_iTrails;++i)
 	{
-		g_eTrails[i][iCacheID] = PrecacheModel2(g_eTrails[i][szMaterial], true);
-		Downloader_AddFileToDownloadsTable(g_eTrails[i][szMaterial]);
+		g_eTrails[i].iCacheID = PrecacheModel2(g_eTrails[i].szMaterial, true);
+		Downloader_AddFileToDownloadsTable(g_eTrails[i].szMaterial);
 	}
 }
 
@@ -86,14 +87,14 @@ public Trails_Reset()
 public Trails_Config(&Handle:kv, itemid)
 {
 	Store_SetDataIndex(itemid, g_iTrails);
-	KvGetString(kv, "material", g_eTrails[g_iTrails][szMaterial], PLATFORM_MAX_PATH);
-	KvGetString(kv, "width", g_eTrails[g_iTrails][szWidth], 16, "10.0");
-	g_eTrails[g_iTrails][fWidth] = KvGetFloat(kv, "width", 10.0);
-	KvGetString(kv, "color", g_eTrails[g_iTrails][szColor], 16, "255 255 255");
-	KvGetColor(kv, "color", g_eTrails[g_iTrails][iColor][0], g_eTrails[g_iTrails][iColor][1], g_eTrails[g_iTrails][iColor][2], g_eTrails[g_iTrails][iColor][3]);
-	g_eTrails[g_iTrails][iSlot] = KvGetNum(kv, "slot");
+	KvGetString(kv, "material", g_eTrails[g_iTrails].szMaterial, PLATFORM_MAX_PATH);
+	KvGetString(kv, "width", g_eTrails[g_iTrails].szWidth, 16, "10.0");
+	g_eTrails[g_iTrails].fWidth = KvGetFloat(kv, "width", 10.0);
+	KvGetString(kv, "color", g_eTrails[g_iTrails].szColor, 16, "255 255 255");
+	KvGetColor(kv, "color", g_eTrails[g_iTrails].iColor[0], g_eTrails[g_iTrails].iColor[1], g_eTrails[g_iTrails].iColor[2], g_eTrails[g_iTrails].iColor[3]);
+	g_eTrails[g_iTrails].iSlot = KvGetNum(kv, "slot");
 	
-	if(FileExists(g_eTrails[g_iTrails][szMaterial], true))
+	if(FileExists(g_eTrails[g_iTrails].szMaterial, true))
 	{
 		++g_iTrails;
 		return true;
@@ -107,13 +108,13 @@ public Trails_Equip(client, id)
 	if(!IsClientInGame(client) || !IsPlayerAlive(client) || !(2<=GetClientTeam(client)<=3))
 		return -1;
 	CreateTimer(0.0, Timer_CreateTrails, GetClientUserId(client));
-	return g_eTrails[Store_GetDataIndex(id)][iSlot];
+	return g_eTrails[Store_GetDataIndex(id)].iSlot;
 }
 
 public Trails_Remove(client, id)
 {
 	CreateTimer(0.0, Timer_CreateTrails, GetClientUserId(client));
-	return  g_eTrails[Store_GetDataIndex(id)][iSlot];
+	return  g_eTrails[Store_GetDataIndex(id)].iSlot;
 }
 
 public Action:Timer_CreateTrails(Handle:timer, any:userid)
@@ -162,7 +163,7 @@ CreateTrail(client, itemid=-1, slot=0)
 		for(new i=0;i<STORE_MAX_SLOTS;++i)
 			if((m_aEquipped[m_iNumEquipped] = Store_GetEquippedItem(client, "trail", i))>=0)
 			{
-				if(i == g_eTrails[m_iData][iSlot])
+				if(i == g_eTrails[m_iData].iSlot)
 					m_iCurrent = m_iNumEquipped;
 				++m_iNumEquipped;
 			}
@@ -177,7 +178,7 @@ CreateTrail(client, itemid=-1, slot=0)
 				DispatchKeyValue(g_iClientTrails[client][slot], "scale", "0.0");
 				DispatchKeyValue(g_iClientTrails[client][slot], "rendermode", "10");
 				DispatchKeyValue(g_iClientTrails[client][slot], "rendercolor", "255 255 255 0");
-				DispatchKeyValue(g_iClientTrails[client][slot], "model", g_eTrails[m_iData][szMaterial]);
+				DispatchKeyValue(g_iClientTrails[client][slot], "model", g_eTrails[m_iData].szMaterial);
 				DispatchSpawn(g_iClientTrails[client][slot]);
 				AttachTrail(g_iClientTrails[client][slot], client, m_iCurrent, m_iNumEquipped);	
 				SDKHook(g_iClientTrails[client][slot], SDKHook_SetTransmit, Hook_TrailSetTransmit);
@@ -185,11 +186,11 @@ CreateTrail(client, itemid=-1, slot=0)
 			
 			//Ugh...
 			decl m_iColor[4];
-			m_iColor[0] = g_eTrails[m_iData][iColor][0];
-			m_iColor[1] = g_eTrails[m_iData][iColor][1];
-			m_iColor[2] = g_eTrails[m_iData][iColor][2];
-			m_iColor[3] = g_eTrails[m_iData][iColor][3];
-			TE_SetupBeamFollow(g_iClientTrails[client][slot], g_eTrails[m_iData][iCacheID], 0, Float:g_eCvars[g_cvarTrailLife][aCache], g_eTrails[m_iData][fWidth], g_eTrails[m_iData][fWidth], 10, m_iColor);
+			m_iColor[0] = g_eTrails[m_iData].iColor[0];
+			m_iColor[1] = g_eTrails[m_iData].iColor[1];
+			m_iColor[2] = g_eTrails[m_iData].iColor[2];
+			m_iColor[3] = g_eTrails[m_iData].iColor[3];
+			TE_SetupBeamFollow(g_iClientTrails[client][slot], g_eTrails[m_iData].iCacheID, 0, Float:g_eCvars[g_cvarTrailLife].aCache, g_eTrails[m_iData].fWidth, g_eTrails[m_iData].fWidth, 10, m_iColor);
 			TE_SendToAll();
 		}
 		else
@@ -198,17 +199,17 @@ CreateTrail(client, itemid=-1, slot=0)
 			SetEntPropFloat(m_iEnt, Prop_Send, "m_flTextureRes", 0.05);
 
 			DispatchKeyValue(m_iEnt, "renderamt", "255");
-			DispatchKeyValue(m_iEnt, "rendercolor", g_eTrails[m_iData][szColor]);
-			DispatchKeyValue(m_iEnt, "lifetime", g_eCvars[g_cvarTrailLife][sCache]);
+			DispatchKeyValue(m_iEnt, "rendercolor", g_eTrails[m_iData].szColor);
+			DispatchKeyValue(m_iEnt, "lifetime", g_eCvars[g_cvarTrailLife].sCache);
 			DispatchKeyValue(m_iEnt, "rendermode", "5");
-			DispatchKeyValue(m_iEnt, "spritename", g_eTrails[m_iData][szMaterial]);
-			DispatchKeyValue(m_iEnt, "startwidth", g_eTrails[m_iData][szWidth]);
-			DispatchKeyValue(m_iEnt, "endwidth", g_eTrails[m_iData][szWidth]);
+			DispatchKeyValue(m_iEnt, "spritename", g_eTrails[m_iData].szMaterial);
+			DispatchKeyValue(m_iEnt, "startwidth", g_eTrails[m_iData].szWidth);
+			DispatchKeyValue(m_iEnt, "endwidth", g_eTrails[m_iData].szWidth);
 			DispatchSpawn(m_iEnt);
 			
 			AttachTrail(m_iEnt, client, m_iCurrent, m_iNumEquipped);
 				
-			g_iClientTrails[client][g_eTrails[m_iData][iSlot]]=m_iEnt;
+			g_iClientTrails[client][g_eTrails[m_iData].iSlot]=m_iEnt;
 			SDKHook(m_iEnt, SDKHook_SetTransmit, Hook_TrailSetTransmit);	
 
 			g_iTrailOwners[m_iEnt]=client;		
@@ -239,11 +240,11 @@ public AttachTrail(ent, client, current, num)
 	new Float:m_fTemp[3] = {0.0, 90.0, 0.0};
 	GetEntPropVector(client, Prop_Data, "m_angAbsRotation", m_fAngle);
 	SetEntPropVector(client, Prop_Data, "m_angAbsRotation", m_fTemp);
-	new Float:m_fX = (Float:g_eCvars[g_cvarPadding][aCache]*((num-1)%g_eCvars[g_cvarMaxColumns][aCache]))/2-(Float:g_eCvars[g_cvarPadding][aCache]*(current%g_eCvars[g_cvarMaxColumns][aCache]));
+	new Float:m_fX = (Float:g_eCvars[g_cvarPadding].aCache*((num-1)%g_eCvars[g_cvarMaxColumns].aCache))/2-(Float:g_eCvars[g_cvarPadding].aCache*(current%g_eCvars[g_cvarMaxColumns].aCache));
 	decl Float:m_fPosition[3];
 	m_fPosition[0] = m_fX;
 	m_fPosition[1] = 0.0;
-	m_fPosition[2]= 5.0+(current/g_eCvars[g_cvarMaxColumns][aCache])*Float:g_eCvars[g_cvarPadding][aCache];
+	m_fPosition[2]= 5.0+(current/g_eCvars[g_cvarMaxColumns].aCache)*Float:g_eCvars[g_cvarPadding].aCache;
 	GetClientAbsOrigin(client, m_fOrigin);
 	AddVectors(m_fOrigin, m_fPosition, m_fOrigin);
 	TeleportEntity(ent, m_fOrigin, m_fTemp, NULL_VECTOR);
@@ -272,7 +273,7 @@ public Trails_OnGameFrame()
 		if(GetVectorDistance(g_fLastPosition[i], m_fPosition)<=5.0)
 		{
 			if(!g_bSpawnTrails[i])
-				if(m_fTime-g_fClientCounters[i]>=Float:g_eCvars[g_cvarTrailLife][aCache]/2)
+				if(m_fTime-g_fClientCounters[i]>=Float:g_eCvars[g_cvarTrailLife].aCache/2)
 					g_bSpawnTrails[i] = true;
 		}
 		else

@@ -10,24 +10,24 @@
 #include <tf2items>
 #endif
 
-enum TFWeapon
+enum struct TFWeapon
 {
-	String:m_szEntity[64],
-	String:m_szModel[PLATFORM_MAX_PATH],
-	m_unClass,
-	m_unItemDefIndex,
-	m_unQuality,
-	m_unLevel,
-	m_unSlot,
-	m_unDefIndex[15],
-	Float:m_flValue[15],
-	m_unAttribs,
-	m_unLives,
+	char m_szEntity[64];
+	char m_szModel[PLATFORM_MAX_PATH];
+	int m_unClass;
+	int m_unItemDefIndex;
+	int m_unQuality;
+	int m_unLevel;
+	int m_unSlot;
+	int m_unDefIndex[15];
+	float m_flValue[15];
+	int m_unAttribs;
+	int m_unLives;
 }
 
 new g_eTFUnusual[STORE_MAX_ITEMS];
 new g_eTFHatDye[STORE_MAX_ITEMS][4];
-new g_eTFWeapons[STORE_MAX_ITEMS][TFWeapon];
+TFWeapon g_eTFWeapons[STORE_MAX_ITEMS];
 new Float:g_flTFHeads[STORE_MAX_ITEMS];
 new Float:g_flTFWeaponSizes[STORE_MAX_ITEMS];
 new String:g_szTFHats[STORE_MAX_ITEMS][PLATFORM_MAX_PATH];
@@ -125,8 +125,8 @@ public TFWeapon_OnMapStart()
 {
 	for(new i=0;i<g_iTFWeapons;++i)
 	{
-		PrecacheModel2(g_eTFWeapons[i][m_szModel]);
-		Downloader_AddFileToDownloadsTable(g_eTFWeapons[i][m_szModel]);
+		PrecacheModel2(g_eTFWeapons[i].m_szModel);
+		Downloader_AddFileToDownloadsTable(g_eTFWeapons[i].m_szModel);
 	}
 }
 
@@ -196,17 +196,17 @@ public TFWeapon_Config(&Handle:kv, itemid)
 {
 	Store_SetDataIndex(itemid, g_iTFWeapons);
 	
-	g_eTFWeapons[g_iTFWeapons][m_unAttribs] = 0;
+	g_eTFWeapons[g_iTFWeapons].m_unAttribs = 0;
 
-	KvGetString(kv, "classname", g_eTFWeapons[g_iTFWeapons][m_szEntity], 64);
-	KvGetString(kv, "model", g_eTFWeapons[g_iTFWeapons][m_szModel], 256);
-	g_eTFWeapons[g_iTFWeapons][m_unItemDefIndex] = KvGetNum(kv, "def_index");
-	g_eTFWeapons[g_iTFWeapons][m_unQuality] = KvGetNum(kv, "quality");
-	g_eTFWeapons[g_iTFWeapons][m_unLevel] = KvGetNum(kv, "level");
-	g_eTFWeapons[g_iTFWeapons][m_unClass] = KvGetNum(kv, "class");
-	g_eTFWeapons[g_iTFWeapons][m_unSlot] = KvGetNum(kv, "playerslot");
+	KvGetString(kv, "classname", g_eTFWeapons[g_iTFWeapons].m_szEntity, 64);
+	KvGetString(kv, "model", g_eTFWeapons[g_iTFWeapons].m_szModel, 256);
+	g_eTFWeapons[g_iTFWeapons].m_unItemDefIndex = KvGetNum(kv, "def_index");
+	g_eTFWeapons[g_iTFWeapons].m_unQuality = KvGetNum(kv, "quality");
+	g_eTFWeapons[g_iTFWeapons].m_unLevel = KvGetNum(kv, "level");
+	g_eTFWeapons[g_iTFWeapons].m_unClass = KvGetNum(kv, "class");
+	g_eTFWeapons[g_iTFWeapons].m_unSlot = KvGetNum(kv, "playerslot");
 
-	if(!FileExists(g_eTFWeapons[g_iTFWeapons][m_szModel], true))
+	if(!FileExists(g_eTFWeapons[g_iTFWeapons].m_szModel, true))
 		return false;
 
 	if(!KvGotoFirstSubKey(kv))
@@ -214,8 +214,8 @@ public TFWeapon_Config(&Handle:kv, itemid)
 
 	do
 	{
-		g_eTFWeapons[g_iTFWeapons][m_unDefIndex][g_eTFWeapons[g_iTFWeapons][m_unAttribs]] = KvGetNum(kv, "def_index");
-		g_eTFWeapons[g_iTFWeapons][m_flValue][g_eTFWeapons[g_iTFWeapons][m_unAttribs]++] = KvGetFloat(kv, "value");
+		g_eTFWeapons[g_iTFWeapons].m_unDefIndex[g_eTFWeapons[g_iTFWeapons].m_unAttribs] = KvGetNum(kv, "def_index");
+		g_eTFWeapons[g_iTFWeapons].m_flValue[g_eTFWeapons[g_iTFWeapons].m_unAttribs++] = KvGetFloat(kv, "value");
 	} while (KvGotoNextKey(kv));
 
 	KvGoBack(kv);
@@ -290,7 +290,7 @@ public TFWeapon_Equip(client, id)
 
 	new idx = Store_GetDataIndex(id);
 
-	if(_:TF2_GetPlayerClass(client) != g_eTFWeapons[idx][m_unClass])
+	if(_:TF2_GetPlayerClass(client) != g_eTFWeapons[idx].m_unClass)
 	{
 		Chat(client, "%t", "TF Wrong Class");
 		return 1;
@@ -300,7 +300,7 @@ public TFWeapon_Equip(client, id)
 	new Handle:m_hItem = TFSupport_CreateItem(idx);
 	TFWeapon_CreateChild(client, idx);
 
-	new ent = GetPlayerWeaponSlot(client, g_eTFWeapons[idx][m_unSlot]);
+	new ent = GetPlayerWeaponSlot(client, g_eTFWeapons[idx].m_unSlot);
 	if(ent)
 		RemovePlayerItem(client, ent);
 
@@ -318,15 +318,15 @@ public TFWeapon_Equip(client, id)
 public Handle:TFSupport_CreateItem(idx)
 {
 	new Handle:m_hItem = TF2Items_CreateItem(OVERRIDE_ALL|FORCE_GENERATION);
-	TF2Items_SetClassname(m_hItem, g_eTFWeapons[idx][m_szEntity]);
-	TF2Items_SetItemIndex(m_hItem, g_eTFWeapons[idx][m_unItemDefIndex]);
-	TF2Items_SetQuality(m_hItem, g_eTFWeapons[idx][m_unQuality]);
-	TF2Items_SetLevel(m_hItem, g_eTFWeapons[idx][m_unLevel]);
-	TF2Items_SetNumAttributes(m_hItem, g_eTFWeapons[idx][m_unAttribs]);
+	TF2Items_SetClassname(m_hItem, g_eTFWeapons[idx].m_szEntity);
+	TF2Items_SetItemIndex(m_hItem, g_eTFWeapons[idx].m_unItemDefIndex);
+	TF2Items_SetQuality(m_hItem, g_eTFWeapons[idx].m_unQuality);
+	TF2Items_SetLevel(m_hItem, g_eTFWeapons[idx].m_unLevel);
+	TF2Items_SetNumAttributes(m_hItem, g_eTFWeapons[idx].m_unAttribs);
 
-	for(new i=0;i<g_eTFWeapons[idx][m_unAttribs];++i)
+	for(new i=0;i<g_eTFWeapons[idx].m_unAttribs;++i)
 	{
-		TF2Items_SetAttribute(m_hItem, i, g_eTFWeapons[idx][m_unDefIndex][i], g_eTFWeapons[idx][m_flValue][i]);
+		TF2Items_SetAttribute(m_hItem, i, g_eTFWeapons[idx].m_unDefIndex[i], g_eTFWeapons[idx].m_flValue[i]);
 	}
 
 	return m_hItem;
@@ -463,7 +463,7 @@ public TFWeapon_RemoveChild(client)
 
 public TFWeapon_CreateChild(client, idx)
 {
-	if(g_eTFWeapons[idx][m_szModel][0]==0)
+	if(g_eTFWeapons[idx].m_szModel[0]==0)
 		return;
 
 	new m_iTeam = GetClientTeam(client);
@@ -499,7 +499,7 @@ public TFWeapon_CreateChild(client, idx)
 	//////////////////////
 
 	new m_iEnt_Hack = CreateEntityByName("prop_dynamic_override");
-	DispatchKeyValue(m_iEnt_Hack, "model", g_eTFWeapons[idx][m_szModel]);
+	DispatchKeyValue(m_iEnt_Hack, "model", g_eTFWeapons[idx].m_szModel);
 	DispatchKeyValue(m_iEnt_Hack, "spawnflags", "256");
 	DispatchKeyValue(m_iEnt_Hack, "solid", "0");
 	SetEntPropEnt(m_iEnt_Hack, Prop_Send, "m_hOwnerEntity", client);

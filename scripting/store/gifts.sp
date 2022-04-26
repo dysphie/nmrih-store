@@ -41,13 +41,13 @@ public Gifts_OnPluginStart()
 
 public Action:Command_Drop(client, args)
 {
-	if(client && !GetClientPrivilege(client, g_eCvars[g_cvarGiftsFlag][aCache]))
+	if(client && !GetClientPrivilege(client, g_eCvars[g_cvarGiftsFlag].aCache))
 	{
 		Chat(client, "%t", "You dont have permission");
 		return Plugin_Handled;
 	}
 
-	if(!g_eCvars[g_cvarGiftsEnabled][aCache])
+	if(!g_eCvars[g_cvarGiftsEnabled].aCache)
 	{
 		Chat(client, "%t", "Credit Gift Disabled");
 		return Plugin_Handled;
@@ -63,7 +63,7 @@ public Action:Command_Drop(client, args)
 	GetCmdArg(1, m_szTmp, sizeof(m_szTmp));
 	
 	new m_iCredits = StringToInt(m_szTmp);
-	if(g_eClients[client][iCredits]<m_iCredits || m_iCredits<=0)
+	if(g_eClients[client].iCredits<m_iCredits || m_iCredits<=0)
 	{
 		Chat(client, "%t", "Credit Invalid Amount");
 		return Plugin_Handled;
@@ -85,9 +85,9 @@ public Action:Command_Drop(client, args)
 
 public Gifts_OnMenu(&Handle:menu, client, itemid)
 {
-	if(!g_eCvars[g_cvarGiftsEnabled][aCache])
+	if(!g_eCvars[g_cvarGiftsEnabled].aCache)
 		return;
-	if(client && !GetClientPrivilege(client, g_eCvars[g_cvarGiftsFlag][aCache]))
+	if(client && !GetClientPrivilege(client, g_eCvars[g_cvarGiftsFlag].aCache))
 		return;
 
 	new target = Store_GetClientTarget(client);
@@ -97,17 +97,17 @@ public Gifts_OnMenu(&Handle:menu, client, itemid)
 
 public bool:Gifts_OnHandler(client, String:info[], itemid)
 {
-	if(!g_eCvars[g_cvarGiftsEnabled][aCache])
+	if(!g_eCvars[g_cvarGiftsEnabled].aCache)
 		return false;
 
 	if(strcmp(info, "drop_gift")==0)
 	{
-		new m_eItem[Store_Item];
-		new m_eHandler[Type_Handler];
+		Store_Item m_eItem;
+		Type_Handler m_eHandler;
 		Store_GetItem(itemid, m_eItem);
-		Store_GetHandler(m_eItem[iHandler], m_eHandler);
+		Store_GetHandler(m_eItem.iHandler, m_eHandler);
 		decl String:m_szTitle[128];
-		Format(m_szTitle, sizeof(m_szTitle), "%t", "Confirm_Gift_Drop", m_eItem[szName], m_eHandler[szType]);
+		Format(m_szTitle, sizeof(m_szTitle), "%t", "Confirm_Gift_Drop", m_eItem.szName, m_eHandler.szType);
 		Store_SetClientMenu(client, 2);
 		if(Store_ShouldConfirm())
 			Store_DisplayConfirmMenu(client, m_szTitle, Gifts_MenuHandler, itemid);
@@ -131,14 +131,14 @@ public Gifts_MenuHandler(Handle:menu, MenuAction:action, client, param2)
 			GetClientAbsOrigin(target, pos);
 			pos[2]+=20.0;
 
-			new output[Client_Item];
+			Client_Item output;
 			Store_GetClientItem(client, param2, output);
 
 			new Handle:data = CreateDataPack();
 			WritePackCell(data, param2);
-			WritePackCell(data, output[iDateOfPurchase]);
-			WritePackCell(data, output[iDateOfExpiration]);
-			WritePackCell(data, output[iPriceOfPurchase]);
+			WritePackCell(data, output.iDateOfPurchase);
+			WritePackCell(data, output.iDateOfExpiration);
+			WritePackCell(data, output.iPriceOfPurchase);
 			ResetPack(data);
 
 			Gifts_SpawnGift(Gifts_OnPickUpItem, "", -1.0, pos, _:data, target);
@@ -149,7 +149,7 @@ public Gifts_MenuHandler(Handle:menu, MenuAction:action, client, param2)
 
 public Gifts_OnPickUp(client)
 {
-	new m_iCredits = GetRandomInt(g_eCvars[g_cvarGiftsMinimum][aCache], g_eCvars[g_cvarGiftsMaximum][aCache]);
+	new m_iCredits = GetRandomInt(g_eCvars[g_cvarGiftsMinimum].aCache, g_eCvars[g_cvarGiftsMaximum].aCache);
 	Store_SetClientCredits(client, Store_GetClientCredits(client)+m_iCredits);
 	Chat(client, "%t", "Gift Credit Picked", m_iCredits);
 }
@@ -165,15 +165,15 @@ public Gifts_OnPickUpItem(client, data, owner)
 
 	CloseHandle(m_hData);
 
-	new m_eItem[Store_Item];
-	new m_eHandler[Type_Handler];
+	Store_Item m_eItem;
+	Type_Handler m_eHandler;
 	Store_GetItem(itemid, m_eItem);
-	Store_GetHandler(m_eItem[iHandler], m_eHandler);
+	Store_GetHandler(m_eItem.iHandler, m_eHandler);
 
 	Store_GiveItem(client, itemid, purchase, expiration, price);
-	Chat(client, "%t", "Gift Item Picked", m_eItem[szName], m_eHandler[szType]);
+	Chat(client, "%t", "Gift Item Picked", m_eItem.szName, m_eHandler.szType);
 
-	Store_LogMessage(client, 0, "Picked up a gift containing the following item: %s", m_eItem[szName]);
+	Store_LogMessage(client, 0, "Picked up a gift containing the following item: %s", m_eItem.szName);
 }
 
 public Gifts_OnPickUpCredit(client, data, owner)

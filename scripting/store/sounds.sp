@@ -8,14 +8,14 @@
 new GAME_TF2 = false;
 #endif
 
-enum Sound
+enum struct Sound
 {
-	String:szSound[PLATFORM_MAX_PATH],
-	String:szShortcut[64],
-	unPrice
+	char szSound[PLATFORM_MAX_PATH];
+	char szShortcut[64];
+	int unPrice;
 }
 
-new g_eSounds[STORE_MAX_ITEMS][Sound];
+Sound g_eSounds[STORE_MAX_ITEMS];
 new g_iSounds = 0;
 
 #if defined STANDALONE_BUILD
@@ -41,9 +41,9 @@ public Sounds_OnMapStart()
 	decl String:tmp[PLATFORM_MAX_PATH];
 	for(new i=0;i<g_iSounds;++i)
 	{
-		strcopy(STRING(tmp), g_eSounds[i][szSound]);
+		strcopy(STRING(tmp), g_eSounds[i].szSound);
 		PrecacheSound(tmp[6], true);
-		Downloader_AddFileToDownloadsTable(g_eSounds[i][szSound]);
+		Downloader_AddFileToDownloadsTable(g_eSounds[i].szSound);
 	}
 }
 
@@ -56,11 +56,11 @@ public Sounds_Config(&Handle:kv, itemid)
 {
 	Store_SetDataIndex(itemid, g_iSounds);
 	
-	KvGetString(kv, "path", g_eSounds[g_iSounds][szSound], PLATFORM_MAX_PATH);
-	KvGetString(kv, "trigger", g_eSounds[g_iSounds][szShortcut], 64);
-	g_eSounds[g_iSounds][unPrice] = KvGetNum(kv, "price");
+	KvGetString(kv, "path", g_eSounds[g_iSounds].szSound, PLATFORM_MAX_PATH);
+	KvGetString(kv, "trigger", g_eSounds[g_iSounds].szShortcut, 64);
+	g_eSounds[g_iSounds].unPrice = KvGetNum(kv, "price");
 	
-	if(FileExists(g_eSounds[g_iSounds][szSound], true))
+	if(FileExists(g_eSounds[g_iSounds].szSound, true))
 	{
 		++g_iSounds;
 		return true;
@@ -74,7 +74,7 @@ public Sounds_Equip(client, id)
 	new m_iData = Store_GetDataIndex(id);
 	LoopIngamePlayers(i)
 	{
-		ClientCommand(i, "play %s", g_eSounds[m_iData][szSound][6]);
+		ClientCommand(i, "play %s", g_eSounds[m_iData].szSound[6]);
 	}
 	return 1;
 }
@@ -95,14 +95,14 @@ public Action:Sounds_PlayerSay(Handle:event, const String:name[], bool:dontBroad
 
 	for(new i=0;i<g_iSounds;++i)
 	{
-		if(strcmp(msg, g_eSounds[i][szShortcut])==0)
+		if(strcmp(msg, g_eSounds[i].szShortcut)==0)
 		{
 			new c = Store_GetClientCredits(client);
-			if(c>=g_eSounds[i][unPrice])
+			if(c>=g_eSounds[i].unPrice)
 			{
-				Store_SetClientCredits(client, c-g_eSounds[i][unPrice]);
+				Store_SetClientCredits(client, c-g_eSounds[i].unPrice);
 				decl String:tmp[PLATFORM_MAX_PATH];
-				strcopy(STRING(tmp), g_eSounds[i][szSound]);
+				strcopy(STRING(tmp), g_eSounds[i].szSound);
 				LoopIngamePlayers(a)
 				{
 					ClientCommand(a, "play %s", tmp[6]);

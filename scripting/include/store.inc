@@ -4,7 +4,7 @@
 #define _store_included
 
 new g_cvarChatTag = -1;
-#define CHAT_TAG g_eCvars[g_cvarChatTag][sCache]
+#define CHAT_TAG g_eCvars[g_cvarChatTag].sCache
 
 #define ITEM_NAME_LENGTH 64
 #define STORE_MAX_ITEMS 2048
@@ -12,53 +12,53 @@ new g_cvarChatTag = -1;
 #define STORE_MAX_PLANS 8
 #define STORE_MAX_SLOTS 4
 
-enum Item_Plan
+enum struct Item_Plan
 {
-	String:szName[ITEM_NAME_LENGTH],
-	iPrice,
-	iTime
+	char szName[ITEM_NAME_LENGTH];
+	int iPrice;
+	int iTime;
 }
 
-enum Store_Item
+enum struct Store_Item
 {
-	String:szName[ITEM_NAME_LENGTH],
-	String:szUniqueId[PLATFORM_MAX_PATH],
-	String:szShortcut[64],
-	iId,
-	iPrice,
-	iParent,
-	iHandler,
-	iFlagBits,
-	iData,
-	iPlans,
-	bool:bBuyable,
-	bool:bIgnoreVIP,
-	Handle:hAttributes
+  char szName[ITEM_NAME_LENGTH];
+	char szUniqueId[PLATFORM_MAX_PATH];
+	char szShortcut[64];
+	int iId;
+	int iPrice;
+	int iParent;
+	int iHandler;
+	int iFlagBits;
+	int iData;
+	int iPlans;
+	bool bBuyable;
+	bool bIgnoreVIP;
+	Handle hAttributes;
 }
 
-enum Type_Handler
+enum struct Type_Handler
 {
-	String:szType[64],
-	String:szUniqueKey[32],
-	bool:bEquipable,
-	bool:bRaw,
-	Handle:hPlugin,
-	Function:fnMapStart,
-	Function:fnReset,
-	Function:fnConfig,
-	Function:fnUse,
-	Function:fnRemove
+	char szType[64];
+	char szUniqueKey[32];
+	bool bEquipable;
+	bool bRaw;
+	Handle hPlugin;
+	Function fnMapStart;
+	Function fnReset;
+	Function fnConfig;
+	Function fnUse;
+	Function fnRemove;
 }
 
-enum Client_Item
+enum struct Client_Item
 {
-	iId,
-	iUniqueId,
-	bool:bSynced,
-	bool:bDeleted,
-	iDateOfPurchase,
-	iDateOfExpiration,
-	iPriceOfPurchase,
+	int iId;
+	int iUniqueId;
+	bool bSynced;
+	bool bDeleted;
+	int iDateOfPurchase;
+	int iDateOfExpiration;
+	int iPriceOfPurchase;
 }
 
 native Store_RegisterHandler(String:type[], String:uniquekey[], Function:mapstart, Function:reset, Function:config, Function:use, Function:remove, bool:equipable = true, bool:raw = false);
@@ -75,11 +75,11 @@ native Store_IsClientVIP(client);
 native Store_IsItemInBoughtPackage(client, itemid, uid=-1);
 native Store_ShouldConfirm();
 native Store_DisplayConfirmMenu(client, String:title[], Function:callback, data);
-native Store_GetItem(itemid, output[Store_Item]);
-native Store_GetHandler(index, output[Type_Handler]);
+native Store_GetItem(itemid, any output[sizeof(Store_Item)]);
+native Store_GetHandler(index, any output[sizeof(Type_Handler)]);
 native Store_GiveItem(client, itemid, purchase=0, expiration=0, price=0);
 native Store_RemoveItem(client, itemid);
-native Store_GetClientItem(client, itemid, output[Client_Item]);
+native Store_GetClientItem(client, itemid, any output[sizeof(Client_Item)]);
 native Store_GetClientTarget(client);
 native Store_GiveClientItem(client, recipient, itemid);
 native Store_HasClientItem(client, itemid);

@@ -55,8 +55,8 @@ public LaserSight_OnPluginStart()
 
 public LaserSight_OnMapStart()
 {
-	g_iLaserBeam = PrecacheModel2(g_eCvars[g_cvarLaserSightMaterial][sCache], true);
-	g_iLaserDot = PrecacheModel2(g_eCvars[g_cvarLaserDotMaterial][sCache], true);
+	g_iLaserBeam = PrecacheModel2(g_eCvars[g_cvarLaserSightMaterial].sCache, true);
+	g_iLaserDot = PrecacheModel2(g_eCvars[g_cvarLaserDotMaterial].sCache, true);
 }
 
 public LaserSight_Reset()

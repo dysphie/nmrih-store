@@ -33,16 +33,16 @@ enum CVAR_TYPE
 	TYPE_FLAG
 }
 
-enum CVAR_CACHE
+enum struct CVAR_CACHE
 {
-	Handle:hCvar,
-	CVAR_TYPE:eType,
-	any:aCache,
-	String:sCache[CVAR_LENGTH],
-	Function:fnCallback
+	Handle hCvar;
+	CVAR_TYPE eType;
+	any aCache;
+	char sCache[CVAR_LENGTH];
+	Function fnCallback;
 }
 
-new g_eCvars[MAX_CVARS][CVAR_CACHE];
+CVAR_CACHE g_eCvars[MAX_CVARS];
 
 new g_iCvars = 0;
 
@@ -208,9 +208,9 @@ stock HookConVar(String:name[], CVAR_TYPE:type, Function:callback=INVALID_FUNCTI
 	if(cvar == INVALID_HANDLE)
 		return -1;
 	HookConVarChange(cvar, GlobalConVarChanged);
-	g_eCvars[g_iCvars][hCvar] = cvar;
-	g_eCvars[g_iCvars][eType] = type;
-	g_eCvars[g_iCvars][fnCallback] = callback;
+	g_eCvars[g_iCvars].hCvar = cvar;
+	g_eCvars[g_iCvars].eType = type;
+	g_eCvars[g_iCvars].fnCallback = callback;
 	CacheCvarValue(g_iCvars);
 	return g_iCvars++;
 }
@@ -219,9 +219,9 @@ stock RegisterConVar(String:name[], String:value[], String:description[], CVAR_T
 {
 	new Handle:cvar = CreateConVar(name, value, description, flags, hasMin, min, hasMax, max);
 	HookConVarChange(cvar, GlobalConVarChanged);
-	g_eCvars[g_iCvars][hCvar] = cvar;
-	g_eCvars[g_iCvars][eType] = type;
-	g_eCvars[g_iCvars][fnCallback] = callback;
+	g_eCvars[g_iCvars].hCvar = cvar;
+	g_eCvars[g_iCvars].eType = type;
+	g_eCvars[g_iCvars].fnCallback = callback;
 	CacheCvarValue(g_iCvars);
 	return g_iCvars++;
 }
@@ -229,13 +229,13 @@ stock RegisterConVar(String:name[], String:value[], String:description[], CVAR_T
 public GlobalConVarChanged(Handle:convar, const String:oldValue[], const String:newValue[])
 {
 	for(new i=0;i<g_iCvars;++i)
-		if(g_eCvars[i][hCvar]==convar)
+		if(g_eCvars[i].hCvar==convar)
 		{
 			CacheCvarValue(i);
 		
-			if(g_eCvars[i][fnCallback]!=INVALID_FUNCTION)
+			if(g_eCvars[i].fnCallback!=INVALID_FUNCTION)
 			{
-				Call_StartFunction(INVALID_HANDLE, g_eCvars[i][fnCallback]);
+				Call_StartFunction(INVALID_HANDLE, g_eCvars[i].fnCallback);
 				Call_PushCell(i);
 				Call_Finish();
 			}
@@ -244,15 +244,15 @@ public GlobalConVarChanged(Handle:convar, const String:oldValue[], const String:
 		}
 }
 
-public CacheCvarValue(index)
+public void CacheCvarValue(int index)
 {
-	GetConVarString(g_eCvars[index][hCvar], g_eCvars[index][sCache], CVAR_LENGTH);
-	if(g_eCvars[index][eType]==TYPE_INT)
-		g_eCvars[index][aCache] = GetConVarInt(g_eCvars[index][hCvar]);
-	else if(g_eCvars[index][eType]==TYPE_FLOAT)
-		g_eCvars[index][aCache] = GetConVarFloat(g_eCvars[index][hCvar]);
-	else if(g_eCvars[index][eType]==TYPE_FLAG)
-		g_eCvars[index][aCache] = ReadFlagString(g_eCvars[index][sCache]);
+	GetConVarString(g_eCvars[index].hCvar, g_eCvars[index].sCache, CVAR_LENGTH);
+	if(g_eCvars[index].eType==TYPE_INT)
+		g_eCvars[index].aCache = GetConVarInt(g_eCvars[index].hCvar);
+	else if(g_eCvars[index].eType==TYPE_FLOAT)
+		g_eCvars[index].aCache = GetConVarFloat(g_eCvars[index].hCvar);
+	else if(g_eCvars[index].eType==TYPE_FLAG)
+		g_eCvars[index].aCache = ReadFlagString(g_eCvars[index].sCache);
 }
 
 public SQLCallback_Void(Handle:owner, Handle:hndl, const String:error[], any:suspend_errors)

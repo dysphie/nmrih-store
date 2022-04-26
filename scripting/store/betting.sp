@@ -11,6 +11,7 @@ new GAME_DOD = false;
 new GAME_TF2 = false;
 new GAME_L4D = false;
 new GAME_L4D2 = false;
+bool GAME_NMRIH = false;
 #endif
 
 new g_iPlayerPot[MAXPLAYERS+1];
@@ -42,6 +43,8 @@ public Betting_OnPluginStart()
 		GAME_L4D = true;
 	else if(strcmp(m_szGameDir, "l4d2")==0)
 		GAME_L4D2 = true;
+	else if (strcmp(g_szGameDir, "nmrih")==0 || strcmp(g_szGameDir, "nmrih_dev") == 0)
+		GAME_NMRIH = true;
 #endif
 
 	g_cvarEnableBetting = RegisterConVar("sm_store_betting", "1", "Enable/disable betting of credits", TYPE_INT);
@@ -79,10 +82,10 @@ public Betting_OnClientDisconnect(client)
 
 public Action:Command_Bet(client, args)
 {
-	if(!g_eCvars[g_cvarEnableBetting][aCache])
+	if(!g_eCvars[g_cvarEnableBetting].aCache)
 		return Plugin_Handled;
 
-	if(g_iBettingStart+g_eCvars[g_cvarBettingPeriod][aCache] < GetTime())
+	if(g_iBettingStart+g_eCvars[g_cvarBettingPeriod].aCache < GetTime())
 	{
 		Chat(client, "%t", "Betting Period Over");
 		return Plugin_Handled;
