@@ -114,7 +114,9 @@ public ZRClass_Config(&Handle:kv, itemid)
 public ZRClass_Equip(client, id)
 {
 	new m_iData = Store_GetDataIndex(id);
-	g_iClientClasses[client][g_eZRClasses[m_iData].bZombie] = g_eZRClasses[m_iData].unIndex;
+	
+	int idx = g_eZRClasses[m_iData].bZombie ? 1 : 0;
+	g_iClientClasses[client][idx] = g_eZRClasses[m_iData].unIndex;
 
 	ZR_SelectClientClass(client, g_eZRClasses[m_iData].unIndex, false, false);
 
@@ -124,7 +126,8 @@ public ZRClass_Equip(client, id)
 public ZRClass_Remove(client, id)
 {
 	new m_iData = Store_GetDataIndex(id);
-	g_iClientClasses[client][g_eZRClasses[m_iData].bZombie] = -1;
+	int idx = g_eZRClasses[m_iData].bZombie ? 1 : 0;
+	g_iClientClasses[client][idx] = -1;
 
 	if(g_eZRClasses[m_iData].bZombie)
 		ZR_SelectClientClass(client, ZR_GetClassByName(g_eCvars[g_cvarDefaultZombieClass].sCache), false, false);

@@ -21,6 +21,8 @@ new g_unClientPet[MAXPLAYERS+1] = {INVALID_ENT_REFERENCE, ...};
 new g_unSelectedPet[MAXPLAYERS+1]={-1,...};
 new g_unLastAnimation[MAXPLAYERS+1]={-1,...};
 
+ConVar g_hAttachPoint = null;
+
 #if defined STANDALONE_BUILD
 public OnPluginStart()
 #else
@@ -37,6 +39,8 @@ public Pets_OnPluginStart()
 #endif
 	if(GAME_TF2)
 		return;	
+
+	g_hAttachPoint = CreateConVar("sm_store_pets_default_attachment", "HipAttachmentRight", "Attach point for pet");
 
 	Store_RegisterHandler("pet", "model", Pets_OnMapStart, Pets_Reset, Pets_Config, Pets_Equip, Pets_Remove, true);
 
@@ -217,7 +221,10 @@ public CreatePet(client)
 		SetVariantString("!activator");
 		AcceptEntityInput(m_unEnt, "SetParent", client, m_unEnt, 0);
 		
-		SetVariantString("letthehungergamesbegin");
+		char szAttachment[64];
+		g_hAttachPoint.GetString(szAttachment, sizeof(szAttachment));
+
+		SetVariantString(szAttachment);
 		AcceptEntityInput(m_unEnt, "SetParentAttachmentMaintainOffset", m_unEnt, m_unEnt, 0);
 	  
 		g_unClientPet[client] = EntIndexToEntRef(m_unEnt);

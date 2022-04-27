@@ -136,7 +136,7 @@ new String:g_szClientData[MAXPLAYERS+1][256];
 new TopMenuObject:g_eStoreAdmin;
 
 new PublicChatTrigger = 0;
-new SilentChatTrigger = 0;
+//new SilentChatTrigger = 0;
 
 //////////////////////////////
 //			MODULES			//
@@ -223,7 +223,7 @@ public OnPluginStart()
 	}
 
 	// Supress warnings about unused variables.....
-	if(GAME_DOD || GAME_L4D || GAME_L4D2 || g_bL4D || g_bL4D2 || g_bND) {}
+	if(GAME_DOD || GAME_L4D || GAME_L4D2 || GAME_NMRIH || g_bL4D || g_bL4D2 || g_bND) {}
 
 	// Setting default values
 	for(new i=1;i<=MaxClients;++i)
@@ -1480,7 +1480,7 @@ DisplayStoreMenu(client, parent=-1, last=-1)
 	g_iMenuNum[client] = 1;
 	new target = g_iMenuClient[client];
 
-	new Handle:m_hMenu = CreateMenu(MenuHandler_Store);
+	Menu m_hMenu = new Menu(MenuHandler_Store);
 	if(parent!=-1)
 	{
 		SetMenuExitBackButton(m_hMenu, true);
@@ -1585,7 +1585,10 @@ DisplayStoreMenu(client, parent=-1, last=-1)
 		}
 	}
 	
-	if (m_hMenu.ItemCount)
+	if (m_hMenu.ItemCount <= 0)
+	{
+		m_hMenu.AddItem("", "No items", ITEMDRAW_DISABLED); // TODO: Translate
+	}
 
 	if(last == -1)
 		DisplayMenu(m_hMenu, client, 0);
@@ -2799,8 +2802,8 @@ public SMCResult:Config_KeyValue(Handle:parser, const String:key[], const String
 {
     if(StrEqual(key, "PublicChatTrigger", false))
         PublicChatTrigger = value[0];
-    else if(StrEqual(key, "SilentChatTrigger", false))
-        SilentChatTrigger = value[0];
+    // else if(StrEqual(key, "SilentChatTrigger", false))
+    //     SilentChatTrigger = value[0];
     
     return SMCParse_Continue;
 }
@@ -2849,7 +2852,7 @@ public Store_ReloadConfig()
 	}
 }
 
-Store_WalkConfig(&Handle:kv, parent=-1)
+void Store_WalkConfig(KeyValues kv, int parent = -1)
 {
 	decl String:m_szType[32];
 	decl String:m_szGame[64];
