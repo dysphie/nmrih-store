@@ -842,7 +842,7 @@ public Native_DisplayConfirmMenu(Handle:plugin, numParams)
 	new client = GetNativeCell(1);
 	char title[255];
 	GetNativeString(2, STRING(title));
-	new callback = GetNativeCell(3);
+	Function callback = GetNativeFunction(3);
 	new data = GetNativeCell(4);
 
 	new Handle:m_hMenu = CreateMenu(MenuHandler_Confirm);
@@ -850,7 +850,12 @@ public Native_DisplayConfirmMenu(Handle:plugin, numParams)
 	SetMenuExitButton(m_hMenu, false);
 	new String:m_szCallback[32];
 	new String:m_szData[11];
-	Format(STRING(m_szCallback), "%d.%d", plugin, callback);
+
+	DataPack pack = new DataPack();
+	pack.WriteCell(plugin);
+	pack.WriteFunction(callback);
+	Format(m_szCallback, sizeof(m_szCallback), "%d", pack);
+
 	IntToString(data, STRING(m_szData));
 	AddMenuItemEx(m_hMenu, ITEMDRAW_DEFAULT, m_szCallback, "%t", "Confirm_Yes");
 	AddMenuItemEx(m_hMenu, ITEMDRAW_DEFAULT, m_szData, "%t", "Confirm_No");
@@ -2038,7 +2043,15 @@ public MenuHandler_Gift(Handle:menu, MenuAction:action, client, param2)
 public MenuHandler_Confirm(Handle:menu, MenuAction:action, client, param2)
 {
 	if (action == MenuAction_End)
+	{
+		char m_szCallback[32];
+		GetMenuItem(menu, 0, m_szCallback, sizeof(m_szCallback));
+
+		DataPack pack = view_as<DataPack>(StringToInt(m_szCallback));
+		delete pack;
+
 		CloseHandle(menu);
+	}
 	else if (action == MenuAction_Select)
 	{		
 		if(param2 == 0)
@@ -2049,8 +2062,11 @@ public MenuHandler_Confirm(Handle:menu, MenuAction:action, client, param2)
 			GetMenuItem(menu, 1, STRING(m_szData));
 			new m_iPos = FindCharInString(m_szCallback, '.');
 			m_szCallback[m_iPos] = 0;
-			new Handle:m_hPlugin = Handle:StringToInt(m_szCallback);
-			new Function:fnMenuCallback = Function:StringToInt(m_szCallback[m_iPos+1]);
+
+			DataPack pack = view_as<DataPack>(StringToInt(m_szCallback));
+			
+			Handle m_hPlugin = pack.ReadCell();
+			Function fnMenuCallback = pack.ReadFunction();
 			if(fnMenuCallback != INVALID_FUNCTION)
 			{
 				Call_StartFunction(m_hPlugin, fnMenuCallback);
