@@ -2064,6 +2064,7 @@ public MenuHandler_Confirm(Handle:menu, MenuAction:action, client, param2)
 			m_szCallback[m_iPos] = 0;
 
 			DataPack pack = view_as<DataPack>(StringToInt(m_szCallback));
+			pack.Reset();
 			
 			Handle m_hPlugin = pack.ReadCell();
 			Function fnMenuCallback = pack.ReadFunction();
