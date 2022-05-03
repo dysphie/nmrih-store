@@ -2060,8 +2060,6 @@ public MenuHandler_Confirm(Handle:menu, MenuAction:action, client, param2)
 			char m_szData[11];
 			GetMenuItem(menu, 0, STRING(m_szCallback));
 			GetMenuItem(menu, 1, STRING(m_szData));
-			new m_iPos = FindCharInString(m_szCallback, '.');
-			m_szCallback[m_iPos] = 0;
 
 			DataPack pack = view_as<DataPack>(StringToInt(m_szCallback));
 			pack.Reset();
