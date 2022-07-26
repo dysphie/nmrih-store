@@ -305,8 +305,8 @@ public DisplayTradeMenu(client)
 	AddMenuItemEx(m_hMenu, ITEMDRAW_DEFAULT, "cancel", "%t", "Cancel");
 	AddMenuItemEx(m_hMenu, ITEMDRAW_DEFAULT, "offer", "%t\n\n\n", "Offer");
 
-	new m_eItem[Store_Item];
-	new m_eHandler[Type_Handler];
+	Store_Item m_eItem;
+	Type_Handler m_eHandler;
 	decl String:m_szItemID[11];
 
 	for(new i=0;i<STORE_TRADE_MAX_OFFERS;++i)
@@ -314,10 +314,10 @@ public DisplayTradeMenu(client)
 		if(g_iOffers[client][i] == -1)
 			continue;
 		Store_GetItem(g_iOffers[client][i], m_eItem);
-		Store_GetHandler(m_eItem[iHandler], m_eHandler);
+		Store_GetHandler(m_eItem.iHandler, m_eHandler);
 
 		IntToString(g_iOffers[client][i], STRING(m_szItemID));
-		AddMenuItemEx(m_hMenu, ITEMDRAW_DEFAULT, m_szItemID, "%s %s", m_eItem[szName], m_eHandler[szType]);
+		AddMenuItemEx(m_hMenu, ITEMDRAW_DEFAULT, m_szItemID, "%s %s", m_eItem.szName, m_eHandler.szType);
 	}
 
 	DisplayMenu(m_hMenu, client, 0);
@@ -352,8 +352,8 @@ public DisplayPartnerMenu(client)
 	idx += Format(m_szMessage[idx], sizeof(m_szMessage)-idx, "%t\n\n", "Partner Credit Offer", g_iOfferedCredits[target]);
 	idx += Format(m_szMessage[idx], sizeof(m_szMessage)-idx, "%t\n\n", "Partner Item Offer");
 
-	new m_eItem[Store_Item];
-	new m_eHandler[Type_Handler];
+	Store_Item m_eItem;
+	Type_Handler m_eHandler;
 
 	new index = 0;
 	for(new i=0;i<STORE_TRADE_MAX_OFFERS;++i)
@@ -368,8 +368,8 @@ public DisplayPartnerMenu(client)
 			continue;
 		}
 		Store_GetItem(g_iOffers[target][i], m_eItem);
-		Store_GetHandler(m_eItem[iHandler], m_eHandler);
-		idx += Format(m_szMessage[idx], sizeof(m_szMessage)-idx, "%d. %s %s\n", ++index, m_eItem[szName], m_eHandler[szType]);
+		Store_GetHandler(m_eItem.iHandler, m_eHandler);
+		idx += Format(m_szMessage[idx], sizeof(m_szMessage)-idx, "%d. %s %s\n", ++index, m_eItem.szName, m_eHandler.szType);
 	}
 
 	if(m_bRedisplay)
@@ -545,12 +545,12 @@ public bool:Trade_OnHandler(client, String:info[], itemid)
 
 	if(strcmp(info, "add_to_offer")==0)
 	{
-		new m_eItem[Store_Item];
-		new m_eHandler[Type_Handler];
+		Store_Item m_eItem;
+		Type_Handler m_eHandler;
 		Store_GetItem(itemid, m_eItem);
-		Store_GetHandler(m_eItem[iHandler], m_eHandler);
-		decl String:m_szTitle[128];
-		Format(m_szTitle, sizeof(m_szTitle), "%t", "Confirm_Offer_Item", m_eItem[szName], m_eHandler[szType]);
+		Store_GetHandler(m_eItem.iHandler, m_eHandler);
+		char m_szTitle[128];
+		Format(m_szTitle, sizeof(m_szTitle), "%t", "Confirm_Offer_Item", m_eItem.szName, m_eHandler.szType);
 		Store_SetClientMenu(client, 2);
 		if(Store_ShouldConfirm())
 			Store_DisplayConfirmMenu(client, m_szTitle, Trade_MenuHandler, itemid);
@@ -558,12 +558,12 @@ public bool:Trade_OnHandler(client, String:info[], itemid)
 			Trade_MenuHandler(INVALID_HANDLE, MenuAction_Select, client, itemid);
 	} else if(strcmp(info, "trade_this_item")==0)
 	{
-		new m_eItem[Store_Item];
-		new m_eHandler[Type_Handler];
+		Store_Item m_eItem;
+		Type_Handler m_eHandler;
 		Store_GetItem(itemid, m_eItem);
-		Store_GetHandler(m_eItem[iHandler], m_eHandler);
+		Store_GetHandler(m_eItem.iHandler, m_eHandler);
 		decl String:m_szTitle[128];
-		Format(m_szTitle, sizeof(m_szTitle), "%t", "Confirm_Trade_Item", m_eItem[szName], m_eHandler[szType]);
+		Format(m_szTitle, sizeof(m_szTitle), "%t", "Confirm_Trade_Item", m_eItem.szName, m_eHandler.szType);
 		Store_SetClientMenu(client, 2);
 		if(Store_ShouldConfirm())
 			Store_DisplayConfirmMenu(client, m_szTitle, Trade_ConfirmTradeHandler, itemid);

@@ -1,4 +1,5 @@
 #pragma semicolon 1
+#pragma dynamic 53248
 
 //////////////////////////////
 //		DEFINITIONS			//
@@ -177,6 +178,7 @@ new PublicChatTrigger = 0;
 #include "store/sprays.sp"
 #include "store/admin.sp"
 #include "store/glow.sp"
+#include "store/nmrih_points.sp"
 #endif
 
 //////////////////////////////////
@@ -317,6 +319,7 @@ public OnPluginStart()
 	Sprays_OnPluginStart();
 	AdminGroup_OnPluginStart();
 	Glow_OnPluginStart();
+	NMRiHPoints_OnPluginStart();
 #endif
 
 	new Handle:topmenu;
