@@ -143,7 +143,7 @@ public Hats_Config(&Handle:kv, itemid)
 
 public Hats_Equip(client, id)
 {
-	if(!IsClientInGame(client) || !IsPlayerAlive(client) || !(2<=GetClientTeam(client)<=3))
+	if (!IsClientInGame(client) || !IsPlayerAlive(client))
 		return -1;
 	new m_iData = Store_GetDataIndex(id);
 	RemoveHat(client, g_eHats[m_iData].iSlot);
@@ -161,7 +161,7 @@ public Hats_Remove(client, id)
 public Action:Hats_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if(!IsClientInGame(client) || !IsPlayerAlive(client) || !(2<=GetClientTeam(client)<=3))
+	if (!IsClientInGame(client) || !IsPlayerAlive(client))
 		return Plugin_Continue;
 		
 	// Support for plugins that set client model
@@ -173,7 +173,7 @@ public Action:Hats_PlayerSpawn(Handle:event, const String:name[], bool:dontBroad
 public Action:Hats_PlayerSpawn_Post(Handle:timer, any:userid)
 {
 	new client = GetClientOfUserId(userid);
-	if(!client || !IsClientInGame(client) || !IsPlayerAlive(client) || !(2<=GetClientTeam(client)<=3))
+	if(!client || !IsClientInGame(client) || !IsPlayerAlive(client))
 		return Plugin_Stop;
 
 	for(new i=0;i<STORE_MAX_SLOTS;++i)
@@ -292,6 +292,7 @@ public RemoveHat(client, slot)
 
 public Action:Hook_SetTransmit(ent, client)
 {
+	PrintToServer("Hook_SetTransmit %N", client);
 	if(GetFeatureStatus(FeatureType_Native, "IsPlayerInTP")==FeatureStatus_Available)
 		if(IsPlayerInTP(client))
 			return Plugin_Continue;
@@ -311,6 +312,7 @@ public Action:Hook_SetTransmit(ent, client)
 					return Plugin_Handled;
 		}
 	}
+	// FIXME
 	
 	return Plugin_Continue;
 }
