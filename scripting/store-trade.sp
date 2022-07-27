@@ -18,6 +18,7 @@
 
 #include <sourcemod>
 #include <sdktools>
+#include <multicolors>
 
 #undef REQUIRE_EXTENSIONS
 #undef REQUIRE_PLUGIN

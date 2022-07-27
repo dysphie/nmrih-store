@@ -24,7 +24,7 @@
 #include <zephstocks>
 #include <donate>
 #include <adminmenu>
-#include <morecolors>
+#include <multicolors>
 #if !defined STANDALONE_BUILD
 #include <sdkhooks>
 #include <cstrike>

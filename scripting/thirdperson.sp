@@ -9,6 +9,7 @@
 #include <sourcemod>
 #include <sdktools>
 #include <zephstocks>
+#include <multicolors>
 #pragma newdecls required
 
 bool g_bThirdperson[MAXPLAYERS+1] = {false,...};

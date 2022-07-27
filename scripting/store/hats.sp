@@ -292,7 +292,6 @@ public RemoveHat(client, slot)
 
 public Action:Hook_SetTransmit(ent, client)
 {
-	PrintToServer("Hook_SetTransmit %N", client);
 	if(GetFeatureStatus(FeatureType_Native, "IsPlayerInTP")==FeatureStatus_Available)
 		if(IsPlayerInTP(client))
 			return Plugin_Continue;
