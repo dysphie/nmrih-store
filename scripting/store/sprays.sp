@@ -24,7 +24,7 @@ public Sprays_OnPluginStart()
 	g_cvarSprayLimit = RegisterConVar("sm_store_spray_limit", "30", "Number of seconds between two sprays", TYPE_INT);
 	g_cvarSprayDistance = RegisterConVar("sm_store_spray_distance", "115", "Distance from wall to spray", TYPE_FLOAT);
 
-	if(GAME_CSGO)
+	if(GAME_CSGO||GAME_NMRIH)
 		Store_RegisterHandler("spray", "material", Sprays_OnMapStart, Sprays_Reset, Sprays_Config, Sprays_Equip, Sprays_Remove, true);
 }
 
@@ -37,7 +37,6 @@ public Sprays_OnMapStart()
 		if(FileExists(g_szSprays[i], true))
 		{
 			strcopy(STRING(m_szDecal), g_szSprays[i][10]);
-			PrintToServer("%s (%d)", m_szDecal, strlen(m_szDecal)-4);
 			m_szDecal[strlen(m_szDecal)-4]=0;
 
 			g_iSprayPrecache[i] = PrecacheDecal(m_szDecal, true);

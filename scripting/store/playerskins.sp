@@ -161,7 +161,7 @@ public PlayerSkins_Equip(client, id)
 	else
 	{
 		if(Store_IsClientLoaded(client))
-			Chat(client, "%t", "PlayerSkins Settings Changed");
+			CPrintToChat(client, "%t", "PlayerSkins Settings Changed");
 
 		if(g_ePlayerSkins[m_iData].bTemporary)
 		{
@@ -175,7 +175,7 @@ public PlayerSkins_Equip(client, id)
 public PlayerSkins_Remove(client, id)
 {
 	if(Store_IsClientLoaded(client) && !g_eCvars[g_cvarSkinChangeInstant].aCache)
-		Chat(client, "%t", "PlayerSkins Settings Changed");
+		CPrintToChat(client, "%t", "PlayerSkins Settings Changed");
 	return g_ePlayerSkins[Store_GetDataIndex(id)].iTeam-2;
 }
 

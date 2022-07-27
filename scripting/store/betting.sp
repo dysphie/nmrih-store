@@ -87,14 +87,14 @@ public Action:Command_Bet(client, args)
 
 	if(g_iBettingStart+g_eCvars[g_cvarBettingPeriod].aCache < GetTime())
 	{
-		Chat(client, "%t", "Betting Period Over");
+		CPrintToChat(client, "%t", "Betting Period Over");
 		return Plugin_Handled;
 	}
 
 		
 	if(g_iPlayerPot[client]>0)
 	{
-		Chat(client, "%t", "Betting Already Placed");
+		CPrintToChat(client, "%t", "Betting Already Placed");
 		return Plugin_Handled;
 	}
 
@@ -110,7 +110,7 @@ public Action:Command_Bet(client, args)
 
 	if(!(0<m_iCredits<=Store_GetClientCredits(client)))
 	{
-		Chat(client, "%t", "Credit Invalid Amount");
+		CPrintToChat(client, "%t", "Credit Invalid Amount");
 		return Plugin_Handled;
 	}
 
@@ -120,14 +120,14 @@ public Action:Command_Bet(client, args)
 		g_iPlayerTeam[client]=3;
 	else
 	{
-		Chat(client, "%t", "Betting Invalid Team");
+		CPrintToChat(client, "%t", "Betting Invalid Team");
 		return Plugin_Handled;
 	}
 
 	g_iPlayerPot[client] = m_iCredits;
 	Store_SetClientCredits(client, Store_GetClientCredits(client)-m_iCredits);
 
-	Chat(client, "%t", "Betting Placed", m_iCredits);
+	CPrintToChat(client, "%t", "Betting Placed", m_iCredits);
 
 	return Plugin_Handled;
 }
@@ -187,10 +187,10 @@ public Action:Betting_RoundEnd(Handle:event,const String:name[],bool:dontBroadca
 			if(g_iPlayerTeam[i] == m_iWinner)
 			{
 				Store_SetClientCredits(i, Store_GetClientCredits(i)+RoundFloat(g_iPlayerPot[i]*m_fMultiplier));
-				Chat(i, "%t", "Betting Won", RoundFloat(g_iPlayerPot[i]*m_fMultiplier));
+				CPrintToChat(i, "%t", "Betting Won", RoundFloat(g_iPlayerPot[i]*m_fMultiplier));
 			}
 			else
-				Chat(i, "%t", "Betting Lost", g_iPlayerPot[i]);
+				CPrintToChat(i, "%t", "Betting Lost", g_iPlayerPot[i]);
 		}
 		g_iPlayerPot[i]=0;
 		g_iPlayerTeam[i]=0;

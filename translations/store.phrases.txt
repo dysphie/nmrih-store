@@ -112,29 +112,29 @@
 	"Chat Bought Item"
 	{
 		"#format" "{1:s},{2:t}"
-		"en" "You have bought a {HIGHLIGHT}{1} {2}{NORMAL}."
-		"hu" "A következőt vetted: {HIGHLIGHT}{1} {2}{NORMAL}."
+		"en" "You have bought a {green}{1} {2}{default}."
+		"hu" "A következőt vetted: {green}{1} {2}{default}."
 	}
 	
 	"Chat Sold Item"
 	{
 		"#format" "{1:s},{2:t}"
-		"en" "You have sold a {HIGHLIGHT}{1} {2}{NORMAL}."
-		"hu" "A következőt adtad el: {HIGHLIGHT}{1} {2}{NORMAL}."
+		"en" "You have sold a {green}{1} {2}{default}."
+		"hu" "A következőt adtad el: {green}{1} {2}{default}."
 	}
 	
 	"Chat Gift Item Sent"
 	{
 		"#format" "{1:s},{2:s},{3:t}"
-		"en" "You have sent {HIGHLIGHT}{1}{NORMAL} a {HIGHLIGHT}{2} {3}{NORMAL} as a gift."
-		"hu" "A következőt küldted: {HIGHLIGHT}{2} {3}{NORMAL} neki: {HIGHLIGHT}{1}{NORMAL}."
+		"en" "You have sent {green}{1}{default} a {green}{2} {3}{default} as a gift."
+		"hu" "A következőt küldted: {green}{2} {3}{default} neki: {green}{1}{default}."
 	}
 	
 	"Chat Gift Item Received"
 	{
 		"#format" "{1:s},{2:s},{3:t}"
-		"en" "{HIGHLIGHT}{1}{NORMAL} has sent you a {HIGHLIGHT}{2} {3}{NORMAL} as a gift."
-		"hu" "{HIGHLIGHT}{1}{NORMAL} a következőt küldte neked: {HIGHLIGHT}{2} {3}{NORMAL}."
+		"en" "{green}{1}{default} has sent you a {green}{2} {3}{default} as a gift."
+		"hu" "{green}{1}{default} a következőt küldte neked: {green}{2} {3}{default}."
 	}
 	
 	"Credit Gift Disabled"
@@ -170,15 +170,15 @@
 	"Credit Gift Sent"
 	{
 		"#format" "{1:d},{2:s}"
-		"en" "You have sent {HIGHLIGHT}{1}{NORMAL} credits to {HIGHLIGHT}{2}{NORMAL}.
-		"hu" "{HIGHLIGHT}{1}{NORMAL} kreditet küldtél neki: {HIGHLIGHT}{2}{NORMAL}."
+		"en" "You have sent {green}{1}{default} credits to {green}{2}{default}.
+		"hu" "{green}{1}{default} kreditet küldtél neki: {green}{2}{default}."
 	}
 	
 	"Credit Gift Received"
 	{
 		"#format" "{1:d},{2:s}"
-		"en" "{HIGHLIGHT}{2}{NORMAL} has sent you {HIGHLIGHT}{1}{NORMAL} credits."
-		"hu" "{HIGHLIGHT}{2}{NORMAL} {HIGHLIGHT}{1}{NORMAL} kreditet küldött neked."
+		"en" "{green}{2}{default} has sent you {green}{1}{default} credits."
+		"hu" "{green}{2}{default} {green}{1}{default} kreditet küldött neked."
 	}
 	
 	"Package Sell"
@@ -308,22 +308,22 @@
 	"Player Credits"
 	{
 		"#format" "{1:s},{2:d}"
-		"en" "{HIGHLIGHT}{1}{NORMAL} has {HIGHLIGHT}{2}{NORMAL} credits."
-		"hu" "{HIGHLIGHT}{1}{NORMAL} {HIGHLIGHT}{2}{NORMAL} kredittel rendelkezik."
+		"en" "{green}{1}{default} has {green}{2}{default} credits."
+		"hu" "{green}{1}{default} {green}{2}{default} kredittel rendelkezik."
 	}
 
 	"Credits Earned For Killing"
 	{
 		"#format" "{1:d},{2:s}"
-		"en" "You earned {HIGHLIGHT}{1}{NORMAL} credits for killing {HIGHLIGHT}{2}{NORMAL}."
-		"hu" "{HIGHLIGHT}{2}{NORMAL} megölésével {HIGHLIGHT}{1}{NORMAL} kreditet szereztél."
+		"en" "You earned {green}{1}{default} credits for killing {green}{2}{default}."
+		"hu" "{green}{2}{default} megölésével {green}{1}{default} kreditet szereztél."
 	}
 
 	"Credits Earned For Playing"
 	{
 		"#format" "{1:d}"
-		"en" "You earned {HIGHLIGHT}{1}{NORMAL} credits for playing on the server."
-		"hu" "{HIGHLIGHT}{1}{NORMAL} kreditet szereztél az itt töltött időért.
+		"en" "You earned {green}{1}{default} credits for playing on the server."
+		"hu" "{green}{1}{default} kreditet szereztél az itt töltött időért.
 	}
 
 	"Drop Gift"
@@ -335,22 +335,22 @@
 	"Gift Item Picked"
 	{
 		"#format" "{1:s},{2:t}"
-		"en" "You picked up a {HIGHLIGHT}{1} {2}{NORMAL}."
-		"hu" "A következőt vetted fel {HIGHLIGHT}{1} {2}{NORMAL}."
+		"en" "You picked up a {green}{1} {2}{default}."
+		"hu" "A következőt vetted fel {green}{1} {2}{default}."
 	}
 
 	"Gift Credit Picked"
 	{
 		"#format" "{1:d}"
-		"en" "You picked up {HIGHLIGHT}{1} credits{NORMAL}."
-		"hu" "{HIGHLIGHT}{1} kreditet{NORMAL} vettél fel."
+		"en" "You picked up {green}{1} credits{default}."
+		"hu" "{green}{1} kreditet{default} vettél fel."
 	}
 
 	"Credit Gift Dropped"
 	{
 		"#format" "{1:d}"
-		"en" "You dropped {HIGHLIGHT}{1} credits{NORMAL} as a gift."
-		"hu" "{HIGHLIGHT}{1} kreditet{NORMAL} ajándékoztál el."
+		"en" "You dropped {green}{1} credits{default} as a gift."
+		"hu" "{green}{1} kreditet{default} ajándékoztál el."
 	}
 
 	"Must be Alive"

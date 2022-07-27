@@ -72,7 +72,7 @@ public Health_Equip(client, id)
 {
 	if(g_iRoundLimit[client] == g_eCvars[g_cvarHealthRoundLimit].aCache)
 	{
-		Chat(client, "%t", "Health Round Limit");
+		CPrintToChat(client, "%t", "Health Round Limit");
 		return 1;
 	}
 

@@ -41,7 +41,20 @@ public Weapons_Config(&Handle:kv, itemid)
 public Weapons_Equip(client, id)
 {
 	new m_iData = Store_GetDataIndex(id);
-	GivePlayerItem(client, g_szWeapons[m_iData]);
+	int weapon = GivePlayerItem(client, g_szWeapons[m_iData]);
+
+	// In NMRiH, GivePlayerItem does not automatically equip the weapon
+	// And EquipPlayerWeapon does not account for inventory weight
+	if (weapon != -1 && GAME_NMRIH) 
+	{
+		float eyePos[3];
+		GetClientEyePosition(client, eyePos);
+		TeleportEntity(weapon, eyePos, NULL_VECTOR, NULL_VECTOR);
+
+		SetVariantString("!activator");
+		AcceptEntityInput(weapon, "Use", client, client);
+	}
+
 	return 0;
 }
 

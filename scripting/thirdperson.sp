@@ -3,7 +3,7 @@
 #define PLUGIN_NAME "Thirdperson | Mirrow Mode"
 #define PLUGIN_AUTHOR "Zephyrus"
 #define PLUGIN_DESCRIPTION "Thirdperson mode | Mirrow Mode"
-#define PLUGIN_VERSION "1.11"
+#define PLUGIN_VERSION "1.11.1"
 #define PLUGIN_URL ""
 
 #include <sourcemod>
@@ -56,6 +56,7 @@ public int Native_TogglePlayerTP(Handle plugin, int numParams)
 	int client = GetNativeCell(1);
 	g_bThirdperson[client] = !g_bThirdperson[client];
 	ToggleThirdperson(client);
+	return 0;
 }
 
 public void OnClientConnected(int client)
@@ -136,7 +137,7 @@ public Action Cmd_Mirror(int client, int args)
 {
 	if (!IsPlayerAlive(client))
 	{
-		ReplyToCommand(client, "[SM] You may not use this command while dead.");
+		CReplyToCommand(client, "[SM] You may not use this command while dead.");
 		return Plugin_Handled;
 	}
 	
@@ -169,7 +170,7 @@ stock void SetMirror(int client, bool b_Mirror)
 		SetEntProp(client, Prop_Send, "m_iFOV", 120);
 		SendConVarValue(client, mp_forcecamera, "1");
 		mirror[client] = true;
-		//ReplyToCommand(client, "[SM] Enabled Mirror.");
+		//CReplyToCommand(client, "[SM] Enabled Mirror.");
 	}
 	else
 	{
@@ -181,7 +182,7 @@ stock void SetMirror(int client, bool b_Mirror)
 		GetConVarString(mp_forcecamera, valor, 6);
 		SendConVarValue(client, mp_forcecamera, valor);
 		mirror[client] = false;
-		//ReplyToCommand(client, "[SM] Disabled Mirror.");
+		//CReplyToCommand(client, "[SM] Disabled Mirror.");
 	}
 	
 }

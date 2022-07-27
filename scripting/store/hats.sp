@@ -24,8 +24,6 @@ enum struct Hat
 	int iSlot;
 }
 
-new Handle:g_hLookupAttachment = INVALID_HANDLE;
-
 Hat g_eHats[STORE_MAX_ITEMS];
 
 new g_iClientHats[MAXPLAYERS+1][STORE_MAX_SLOTS];
@@ -61,20 +59,6 @@ public Hats_OnPluginStart()
 
 	if(GAME_TF2)
 		return;
-
-	new Handle:m_hGameConf = LoadGameConfigFile("store.gamedata");
-	StartPrepSDKCall(SDKCall_Entity);
-	PrepSDKCall_SetFromConf(m_hGameConf, SDKConf_Signature, "LookupAttachment");
-	PrepSDKCall_SetReturnInfo(SDKType_PlainOldData, SDKPass_Plain);
-	PrepSDKCall_AddParameter(SDKType_String, SDKPass_Pointer);
-	g_hLookupAttachment = EndPrepSDKCall();
-	CloseHandle(m_hGameConf);
-		
-	if(!g_hLookupAttachment && !GAME_CSGO)
-	{
-		LogError("LookupAttachment signature is out of date or not supported in this game. Hats will be disabled. Please contact the author.");
-		return;
-	}
 	
 	Store_RegisterHandler("hat", "model", Hats_OnMapStart, Hats_Reset, Hats_Config, Hats_Equip, Hats_Remove, true);
 		
@@ -223,7 +207,7 @@ CreateHat(client, itemid=-1, slot=0)
 			return;
 		
 		// If the model doesn't support hats, set the model to one that does
-		if(!LookupAttachment(client, g_eHats[m_iData].szAttachment))
+		if(!LookupEntityAttachment(client, g_eHats[m_iData].szAttachment))
 		{
 			if(g_eCvars[g_cvarOverrideEnabled].aCache)
 			{
@@ -331,17 +315,6 @@ public Action:Hook_SetTransmit(ent, client)
 	return Plugin_Continue;
 }
 
-public LookupAttachment(client, String:point[])
-{
-	if(GAME_CSGO)
-		return true;
-	if(g_hLookupAttachment==INVALID_HANDLE)
-		return false;
-	if(!client || !IsClientInGame(client))
-		return false;
-	return SDKCall(g_hLookupAttachment, client, point);
-}
-
 public Bonemerge(ent)
 {
 	new m_iEntEffects = GetEntProp(ent, Prop_Send, "m_fEffects"); 
@@ -359,7 +332,7 @@ public Store_OnClientModelChanged(client, String:model[])
 	if(strcmp(model, g_eCvars[g_cvarDefaultT].sCache)==0 || strcmp(model, g_eCvars[g_cvarDefaultCT].sCache)==0)
 		return;
 
-	if(!LookupAttachment(client, "forward"))
+	if(!LookupEntityAttachment(client, "forward"))
 	{
 		new bool:m_bHasHats = false;
 		for(new i=0;i<STORE_MAX_SLOTS;++i)
@@ -374,8 +347,8 @@ public Store_OnClientModelChanged(client, String:model[])
 		
 		if(m_bHasHats)
 			if(g_eCvars[g_cvarOverrideEnabled].aCache)
-				Chat(client, "%t", "Override Enabled");
+				CPrintToChat(client, "%t", "Override Enabled");
 			else
-				Chat(client, "%t", "Override Disabled");
+				CPrintToChat(client, "%t", "Override Disabled");
 	}
 }

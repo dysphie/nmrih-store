@@ -68,13 +68,13 @@ public Godmode_Equip(client, id)
 {
 	if(g_iGodmodeRoundLimit[client] == g_eCvars[g_cvarGodmodeRoundLimit].aCache)
 	{
-		Chat(client, "%t", "Godmode Round Limit");
+		CPrintToChat(client, "%t", "Godmode Round Limit");
 		return 1;
 	}
 
 	if(g_eCvars[g_cvarGodmodeTeam].aCache != 0 && g_eCvars[g_cvarGodmodeTeam].aCache!=GetClientTeam(client))
 	{
-		Chat(client, "%t", "Godmode Wrong Team");
+		CPrintToChat(client, "%t", "Godmode Wrong Team");
 		return 1;
 	}
 

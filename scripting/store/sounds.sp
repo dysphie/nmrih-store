@@ -110,7 +110,7 @@ public Action:Sounds_PlayerSay(Handle:event, const String:name[], bool:dontBroad
 			}
 			else
 			{
-				Chat(client, "%t", "Credit Not Enough");
+				CPrintToChat(client, "%t", "Credit Not Enough");
 			}
 			break;
 		}

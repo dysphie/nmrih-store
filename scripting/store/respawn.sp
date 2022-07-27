@@ -64,7 +64,7 @@ public Respawn_Equip(client, id)
 {
 	if(g_iRespawnRoundLimit[client] == g_eCvars[g_cvarRespawnRoundLimit].aCache)
 	{
-		Chat(client, "%t", "Respawn Round Limit");
+		CPrintToChat(client, "%t", "Respawn Round Limit");
 		return 1;
 	}
 

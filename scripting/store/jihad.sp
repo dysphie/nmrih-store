@@ -87,7 +87,7 @@ public Jihad_Equip(client, id)
 	
 	if(g_eCvars[g_cvarJihadTeam].aCache != 0 && g_eCvars[g_cvarJihadTeam].aCache!=GetClientTeam(client))
 	{
-		Chat(client, "%t", "Jihad Wrong Team");
+		CPrintToChat(client, "%t", "Jihad Wrong Team");
 		return 1;
 	}
 
@@ -124,7 +124,7 @@ public Action:Jihad_TriggerBomb(Handle:timer, any:data)
 
 	if(GetRandomFloat() <= g_eJihads[m_iData].flFailrate)
 	{
-		Chat(client, "%t", "Jihad Failed");
+		CPrintToChat(client, "%t", "Jihad Failed");
 		return Plugin_Stop;
 	}
 	

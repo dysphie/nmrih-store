@@ -281,7 +281,7 @@ public TFWeapon_Equip(client, id)
 {
 	if(!IsPlayerAlive(client))
 	{
-		Chat(client, "%t", "Must be Alive");
+		CPrintToChat(client, "%t", "Must be Alive");
 		return 1;
 	}
 
@@ -292,7 +292,7 @@ public TFWeapon_Equip(client, id)
 
 	if(_:TF2_GetPlayerClass(client) != g_eTFWeapons[idx].m_unClass)
 	{
-		Chat(client, "%t", "TF Wrong Class");
+		CPrintToChat(client, "%t", "TF Wrong Class");
 		return 1;
 	}
 
