@@ -1310,7 +1310,7 @@ public Action:Command_GiveCredits(client, params)
 				Format(STRING(m_szQuery), "UPDATE store_players SET credits=credits+%d WHERE authid=\"%s\"", m_iCredits, m_szTmp[8]);
 			}
 			SQL_TVoid(g_hDatabase, m_szQuery);
-			ChatAll("%t", "Credits Given", m_szTmp[8], m_iCredits);
+			CPrintToChatAll("%t", "Credits Given", m_szTmp[8], m_iCredits);
 			m_iReceiver = -1;
 		}
 	} else if(strcmp(m_szTmp, "@all")==0)
@@ -1363,7 +1363,7 @@ public Action:Command_GiveCredits(client, params)
 			CPrintToChat(m_iReceiver, "%t", "Credits Given", g_eClients[m_iReceiver].szName, m_iCredits);
 		}
 		else if(g_eCvars[g_cvarSilent].aCache == 0)
-			ChatAll("%t", "Credits Given", g_eClients[m_iReceiver].szName, m_iCredits);
+			CPrintToChatAll("%t", "Credits Given", g_eClients[m_iReceiver].szName, m_iCredits);
 		Store_LogMessage(m_iReceiver, m_iCredits, "Given by Admin");
 	}
 	
@@ -1420,7 +1420,7 @@ public Action:Command_ResetPlayer(client, params)
 		g_eClients[m_iReceiver].iCredits = 0;
 		for(new i=0;i<g_eClients[m_iReceiver].iItems;++i)
 			Store_RemoveItem(m_iReceiver, g_eClientItems[m_iReceiver][i].iUniqueId);
-		ChatAll("%t", "Player Resetted", g_eClients[m_iReceiver].szName);
+		CPrintToChatAll("%t", "Player Resetted", g_eClients[m_iReceiver].szName);
 	}
 	
 	return Plugin_Handled;
@@ -1436,7 +1436,7 @@ public Action:Command_Credits(client, params)
 
 	if(g_iSpam[client]<GetTime())
 	{
-		ChatAll("%t", "Player Credits", g_eClients[client].szName, g_eClients[client].iCredits);
+		CPrintToChatAll("%t", "Player Credits", g_eClients[client].szName, g_eClients[client].iCredits);
 		g_iSpam[client] = GetTime()+30;
 	}
 	
@@ -2565,7 +2565,7 @@ public SQLCallback_ResetPlayer(Handle:owner, Handle:hndl, const String:error[], 
 			Format(STRING(m_szQuery), "DELETE FROM store_equipment WHERE player_id=%d", id);
 			SQL_TVoid(g_hDatabase, m_szQuery);
 
-			ChatAll("%t", "Player Resetted", m_szAuthId);
+			CPrintToChatAll("%t", "Player Resetted", m_szAuthId);
 
 		}
 		else
