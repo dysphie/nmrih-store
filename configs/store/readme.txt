@@ -1,0 +1,1 @@
+Create a copy of "items.example.txt" and rename to "items.txt", then make your changes there
