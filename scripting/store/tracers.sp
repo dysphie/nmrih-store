@@ -71,27 +71,16 @@ public Tracers_Remove(client, id)
 
 Action OnTE_FireBullets(const char[] te_name, const int[] Players, int numClients, float delay)
 {
-	// 	"m_vecOrigin"		"vector"
-	// "m_vecAngles[0]"		"float"
-	// "m_vecAngles[1]"		"float"
-	// "m_iWeaponID"		"int"
-	// "m_iMode"		"int"
-	// "m_iSeed"		"int"
-	// "m_iPlayer"		"int"
-	// "m_flSpread"		"float"
+	// player is off by 1, thanks newpsw for the hint!
+	int   m_iPlayer  = TE_ReadNum("m_iPlayer") + 1; 
 
-	//int   m_iPlayer  = TE_ReadNum("m_iPlayer");
-
-	float m_vecOrigin[3];
-	TE_ReadVector("m_vecOrigin", m_vecOrigin);
-
-	// Stupid hack because m_iPlayer is always 0
-	// TODO: This is gross and should be done better
-	int m_iPlayer = FindClientByEyePos(m_vecOrigin);
 	if (!IsPlayer(m_iPlayer) || !IsClientInGame(m_iPlayer) || !IsPlayerAlive(m_iPlayer)) {
 		return Plugin_Continue;
 	}
 
+	float m_vecOrigin[3];
+	TE_ReadVector("m_vecOrigin", m_vecOrigin);
+	
 	int m_iEquipped = Store_GetEquippedItem(m_iPlayer, "tracer");
 	if (m_iEquipped < 0) {
 		return Plugin_Continue;
@@ -117,22 +106,6 @@ Action OnTE_FireBullets(const char[] te_name, const int[] Players, int numClient
 	FireBullets(m_iPlayer, m_vecOrigin, m_vecAngles, m_flSpread, x, y, m_iEquipped);
 
 	return Plugin_Continue;
-}
-
-int FindClientByEyePos(float pos[3])
-{
-	float eyePos[3];
-	for (int i = 1; i <= MaxClients; i++) 
-	{
-		if (!IsClientInGame(i) || !IsPlayerAlive(i))
-			continue;
-
-		GetClientEyePosition(i, eyePos);
-		if (GetVectorDistance(eyePos, pos) < 0.001)
-			return i;
-	}
-	
-	return -1;
 }
 
 void FireBullets(int client, float vecSrc[3], float shootAngles[3], float vecSpread, float x, float y, int m_iEquipped)
