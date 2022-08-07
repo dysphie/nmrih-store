@@ -8,7 +8,7 @@
 #define PLUGIN_NAME "[NMRiH] Store"
 #define PLUGIN_AUTHOR "Zephyrus & Dysphie"
 #define PLUGIN_DESCRIPTION "A completely new Store system."
-#define PLUGIN_VERSION "1.1.3"
+#define PLUGIN_VERSION "1.1.4"
 #define PLUGIN_URL "https://github.com/dysphie/nmrih-store"
 
 //////////////////////////////
