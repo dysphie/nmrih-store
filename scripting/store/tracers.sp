@@ -27,8 +27,6 @@ public OnPluginStart()
 public Tracers_OnPluginStart()
 #endif
 {	
-	AddTempEntHook("Shotgun Shot", Tracers_OnTEFireBullets);
-
 	g_cvarTracerMaterial = RegisterConVar("sm_store_tracer_material", "materials/sprites/laserbeam.vmt", "Material to be used with tracers", TYPE_STRING);
 	g_cvarTracerLife = RegisterConVar("sm_store_tracer_life", "0.5", "Life of a tracer in seconds", TYPE_FLOAT);
 	g_cvarTracerWidth = RegisterConVar("sm_store_tracer_width", "1.0", "Life of a tracer in seconds", TYPE_FLOAT);
@@ -69,35 +67,16 @@ public Tracers_Remove(client, id)
 {
 }
 
-Action Tracers_OnTEFireBullets(const char[] te_name, const int[] Players, int numClients, float delay)
+Action Tracers_OnGunShot(int m_iPlayer, float m_vecOrigin[3], float m_vecAngles[3], int m_iSeed, float m_flSpread)
 {
-	// player is off by 1, thanks newpsw for the hint!
-	int   m_iPlayer  = TE_ReadNum("m_iPlayer") + 1; 
-
 	if (!IsPlayer(m_iPlayer) || !IsClientInGame(m_iPlayer) || !IsPlayerAlive(m_iPlayer)) {
 		return Plugin_Continue;
 	}
-
-	float m_vecOrigin[3];
-	TE_ReadVector("m_vecOrigin", m_vecOrigin);
 	
 	int m_iEquipped = Store_GetEquippedItem(m_iPlayer, "tracer");
 	if (m_iEquipped < 0) {
 		return Plugin_Continue;
 	}
-
-	float m_vecAngles[3];
-	m_vecAngles[0] = TE_ReadFloat("m_vecAngles[0]");
-	m_vecAngles[1] = TE_ReadFloat("m_vecAngles[1]");
-
-	// int m_iWeaponID = TE_ReadNum("m_iWeaponID");
-	// int m_iMode     = TE_ReadNum("m_iMode");
-	// TODO: Use above vars to determine how many bullets to fire, currently only one is fired
-
-
-	int m_iSeed    = TE_ReadNum("m_iSeed");
-
-	float m_flSpread = TE_ReadFloat("m_flSpread");
 
 	// Here we recreate what normally happens on the client-side
 	SetRandomSeed(++m_iSeed);

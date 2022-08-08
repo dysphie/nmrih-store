@@ -8,7 +8,7 @@
 #define PLUGIN_NAME "[NMRiH] Store"
 #define PLUGIN_AUTHOR "Zephyrus & Dysphie"
 #define PLUGIN_DESCRIPTION "A completely new Store system."
-#define PLUGIN_VERSION "1.1.4"
+#define PLUGIN_VERSION "1.1.6"
 #define PLUGIN_URL "https://github.com/dysphie/nmrih-store"
 
 //////////////////////////////
@@ -237,6 +237,8 @@ public OnPluginStart()
 		g_eClients[i].iItems = -1;
 		g_eClients[i].hCreditTimer = INVALID_HANDLE;
 	}
+
+	AddTempEntHook("Shotgun Shot", OnGunShot);
 
 	// Register ConVars
 	g_cvarDatabaseEntry = RegisterConVar("sm_store_database", "storage-local", "Name of the default store database entry", TYPE_STRING);
@@ -3175,6 +3177,31 @@ public Store_OnPaymentReceived(FriendID, quanity, Handle:data)
 			break;
 		}
 	}
+}
+
+Action OnGunShot(const char[] te_name, const int[] Players, int numClients, float delay)
+{
+	// player is off by 1, thanks newpsw for the hint!
+	int   player  = TE_ReadNum("m_iPlayer") + 1;
+
+	// int m_iWeaponID = TE_ReadNum("m_iWeaponID");
+	// int m_iMode     = TE_ReadNum("m_iMode");
+	// TODO: Use above vars to determine how many bullets to fire, currently only one is fired
+
+	float origin[3]; 
+	TE_ReadVector("m_vecOrigin", origin);
+
+	float angles[3];
+	angles[0] = TE_ReadFloat("m_vecAngles[0]");
+	angles[1] = TE_ReadFloat("m_vecAngles[1]");
+
+	int seed    = TE_ReadNum("m_iSeed");
+
+	float spread = TE_ReadFloat("m_flSpread");
+
+	Tracers_OnGunShot(player, origin, angles, seed, spread);
+	Paintball_OnGunShot(player, origin, angles, seed, spread);
+	return Plugin_Continue;
 }
 
 bool IsPlayer(int client)

@@ -31,8 +31,6 @@ public Paintball_OnPluginStart()
 	if(GAME_TF2)
 		return;
 	
-	AddTempEntHook("Shotgun Shot", Paintball_OnTEFireBullets);
-
 	Store_RegisterHandler("paintball", "", Paintball_OnMapStart, Paintball_Reset, Paintball_Config, Paintball_Equip, Paintball_Remove, true);
 }
 
@@ -85,35 +83,16 @@ public Paintball_Remove(client, id)
 {
 }
 
-Action Paintball_OnTEFireBullets(const char[] te_name, const int[] Players, int numClients, float delay)
+Action Paintball_OnGunShot(int m_iPlayer, float m_vecOrigin[3], float m_vecAngles[3], int m_iSeed, float m_flSpread)
 {
-	// player is off by 1, thanks newpsw for the hint!
-	int   m_iPlayer  = TE_ReadNum("m_iPlayer") + 1; 
-
 	if (!IsPlayer(m_iPlayer) || !IsClientInGame(m_iPlayer) || !IsPlayerAlive(m_iPlayer)) {
 		return Plugin_Continue;
 	}
-
-	float m_vecOrigin[3];
-	TE_ReadVector("m_vecOrigin", m_vecOrigin);
 	
 	int m_iEquipped = Store_GetEquippedItem(m_iPlayer, "paintball");
 	if (m_iEquipped < 0) {
 		return Plugin_Continue;
 	}
-
-	float m_vecAngles[3];
-	m_vecAngles[0] = TE_ReadFloat("m_vecAngles[0]");
-	m_vecAngles[1] = TE_ReadFloat("m_vecAngles[1]");
-
-	// int m_iWeaponID = TE_ReadNum("m_iWeaponID");
-	// int m_iMode     = TE_ReadNum("m_iMode");
-	// TODO: Use above vars to determine how many bullets to fire, currently only one is fired
-
-
-	int m_iSeed    = TE_ReadNum("m_iSeed");
-
-	float m_flSpread = TE_ReadFloat("m_flSpread");
 
 	// Here we recreate what normally happens on the client-side
 	SetRandomSeed(++m_iSeed);
