@@ -207,20 +207,20 @@ CreateHat(client, itemid=-1, slot=0)
 			return;
 		
 		// If the model doesn't support hats, set the model to one that does
-		if(!LookupEntityAttachment(client, g_eHats[m_iData].szAttachment))
-		{
-			if(g_eCvars[g_cvarOverrideEnabled].aCache)
-			{
-				if(m_iTeam==2 && g_bTOverride)
-					SetEntityModel(client, g_eCvars[g_cvarDefaultT].sCache);
-				else if(m_iTeam==3 && g_bCTOverride)
-					SetEntityModel(client, g_eCvars[g_cvarDefaultCT].sCache);
-				else
-					return;
-			}
-			else
-				return;
-		}
+		// if(!LookupEntityAttachment(client, g_eHats[m_iData].szAttachment))
+		// {
+		// 	if(g_eCvars[g_cvarOverrideEnabled].aCache)
+		// 	{
+		// 		if(m_iTeam==2 && g_bTOverride)
+		// 			SetEntityModel(client, g_eCvars[g_cvarDefaultT].sCache);
+		// 		else if(m_iTeam==3 && g_bCTOverride)
+		// 			SetEntityModel(client, g_eCvars[g_cvarDefaultCT].sCache);
+		// 		else
+		// 			return;
+		// 	}
+		// 	else
+		// 		return;
+		// }
 		
 		// Calculate the final position and angles for the hat
 		decl Float:m_fHatOrigin[3];

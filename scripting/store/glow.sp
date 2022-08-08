@@ -84,7 +84,7 @@ public Glow_OnClientDisconnect(client)
 public Action:Glow_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if(!client || !IsClientInGame(client) || !IsPlayerAlive(client) || !(2<=GetClientTeam(client)<=3))
+	if(!client || !IsClientInGame(client) || !IsPlayerAlive(client))
 		return Plugin_Continue;
 
 	CreateTimer(0.1, Glow_PlayerSpawn_Post, GetClientUserId(client));
@@ -95,7 +95,7 @@ public Action:Glow_PlayerSpawn(Handle:event, const String:name[], bool:dontBroad
 public Action:Glow_PlayerSpawn_Post(Handle:timer, any:userid)
 {
 	new client = GetClientOfUserId(userid);
-	if(!client || !IsClientInGame(client) || !IsPlayerAlive(client) || !(2<=GetClientTeam(client)<=3))
+	if(!client || !IsClientInGame(client) || !IsPlayerAlive(client))
 		return Plugin_Stop;
 
 	ResetGlow(client);

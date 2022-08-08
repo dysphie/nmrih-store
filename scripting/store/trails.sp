@@ -105,7 +105,7 @@ public Trails_Config(&Handle:kv, itemid)
 
 public Trails_Equip(client, id)
 {
-	if(!IsClientInGame(client) || !IsPlayerAlive(client) || !(2<=GetClientTeam(client)<=3))
+	if(!IsClientInGame(client) || !IsPlayerAlive(client))
 		return -1;
 	CreateTimer(0.0, Timer_CreateTrails, GetClientUserId(client));
 	return g_eTrails[Store_GetDataIndex(id)].iSlot;
@@ -133,7 +133,7 @@ public Action:Timer_CreateTrails(Handle:timer, any:userid)
 public Action:Trails_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if(!IsClientInGame(client) || !IsPlayerAlive(client) || !(2<=GetClientTeam(client)<=3))
+	if (!IsClientInGame(client) || !IsPlayerAlive(client))
 		return Plugin_Continue;
 	
 	CreateTimer(0.0, Timer_CreateTrails, GetClientUserId(client));
