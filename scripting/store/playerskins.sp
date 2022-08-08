@@ -182,8 +182,9 @@ public PlayerSkins_Remove(client, id)
 public Action:PlayerSkins_PlayerSpawn(Handle:event,const String:name[],bool:dontBroadcast)
 {
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if(!IsClientInGame(client) || !IsPlayerAlive(client) || !(2<=GetClientTeam(client)<=3))
+	if (!IsClientInGame(client) || !IsPlayerAlive(client)) {
 		return Plugin_Continue;
+	}
 			
 	new Float:Delay = Float:g_eCvars[g_cvarSkinDelay].aCache;
 

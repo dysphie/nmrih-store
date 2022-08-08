@@ -27,7 +27,7 @@ public OnPluginStart()
 public Tracers_OnPluginStart()
 #endif
 {	
-	AddTempEntHook("Shotgun Shot", OnTE_FireBullets);
+	AddTempEntHook("Shotgun Shot", Tracers_OnTEFireBullets);
 
 	g_cvarTracerMaterial = RegisterConVar("sm_store_tracer_material", "materials/sprites/laserbeam.vmt", "Material to be used with tracers", TYPE_STRING);
 	g_cvarTracerLife = RegisterConVar("sm_store_tracer_life", "0.5", "Life of a tracer in seconds", TYPE_FLOAT);
@@ -69,7 +69,7 @@ public Tracers_Remove(client, id)
 {
 }
 
-Action OnTE_FireBullets(const char[] te_name, const int[] Players, int numClients, float delay)
+Action Tracers_OnTEFireBullets(const char[] te_name, const int[] Players, int numClients, float delay)
 {
 	// player is off by 1, thanks newpsw for the hint!
 	int   m_iPlayer  = TE_ReadNum("m_iPlayer") + 1; 
@@ -103,12 +103,12 @@ Action OnTE_FireBullets(const char[] te_name, const int[] Players, int numClient
 	SetRandomSeed(++m_iSeed);
 	float x = GetRandomFloat(-0.5, 0.5) + GetRandomFloat(-0.5, 0.5);
 	float y = GetRandomFloat(-0.5, 0.5) + GetRandomFloat(-0.5, 0.5);
-	FireBullets(m_iPlayer, m_vecOrigin, m_vecAngles, m_flSpread, x, y, m_iEquipped);
+	Tracers_FireBullets(m_iPlayer, m_vecOrigin, m_vecAngles, m_flSpread, x, y, m_iEquipped);
 
 	return Plugin_Continue;
 }
 
-void FireBullets(int client, float vecSrc[3], float shootAngles[3], float vecSpread, float x, float y, int m_iEquipped)
+void Tracers_FireBullets(int client, float vecSrc[3], float shootAngles[3], float vecSpread, float x, float y, int m_iEquipped)
 {
 	float vecDirShooting[3], vecRight[3], vecUp[3];
 	GetAngleVectors(shootAngles, vecDirShooting, vecRight, vecUp);
@@ -153,11 +153,6 @@ void FireBullets(int client, float vecSrc[3], float shootAngles[3], float vecSpr
 bool TF_IgnoreTwoEnts(int entity, int contentsMask)
 {
 	return !IsPlayer(entity) && entity != _TF_IgnoreEnt1 && entity != _TF_IgnoreEnt2;
-}
-
-bool IsPlayer(int client)
-{
-	return 0 < client <= MaxClients;
 }
 
 // int GetLastHitEntity(int client)

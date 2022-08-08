@@ -31,11 +31,7 @@ public Paintball_OnPluginStart()
 	if(GAME_TF2)
 		return;
 	
-	if (!HookEventEx("bullet_impact", Paintball_BulletImpact))
-	{
-		LogError("Could not find bullet_impact event. Paintball will be unavailable");
-		return;
-	}
+	AddTempEntHook("Shotgun Shot", Paintball_OnTEFireBullets);
 
 	Store_RegisterHandler("paintball", "", Paintball_OnMapStart, Paintball_Reset, Paintball_Config, Paintball_Equip, Paintball_Remove, true);
 }
@@ -89,23 +85,82 @@ public Paintball_Remove(client, id)
 {
 }
 
-public Action:Paintball_BulletImpact(Handle:event,const String:name[],bool:dontBroadcast)
+Action Paintball_OnTEFireBullets(const char[] te_name, const int[] Players, int numClients, float delay)
 {
-	new client = GetClientOfUserId(GetEventInt(event, "userid"));
-	new m_iEquipped = Store_GetEquippedItem(client, "paintball");
-	if(m_iEquipped >= 0)
-	{
-		new m_iData = Store_GetDataIndex(m_iEquipped);
-		decl Float:m_fImpact[3];
-		m_fImpact[0] = GetEventFloat(event, "x");
-		m_fImpact[1] = GetEventFloat(event, "y");
-		m_fImpact[2] = GetEventFloat(event, "z");
-		
-		TE_Start("World Decal");
-		TE_WriteVector("m_vecOrigin", m_fImpact);
-		TE_WriteNum("m_nIndex", g_iPaintballDecalIDs[m_iData][GetRandomInt(0, g_iPaintballDecals[m_iData]-1)]);
-		TE_SendToAll();
+	// player is off by 1, thanks newpsw for the hint!
+	int   m_iPlayer  = TE_ReadNum("m_iPlayer") + 1; 
+
+	if (!IsPlayer(m_iPlayer) || !IsClientInGame(m_iPlayer) || !IsPlayerAlive(m_iPlayer)) {
+		return Plugin_Continue;
 	}
+
+	float m_vecOrigin[3];
+	TE_ReadVector("m_vecOrigin", m_vecOrigin);
+	
+	int m_iEquipped = Store_GetEquippedItem(m_iPlayer, "paintball");
+	if (m_iEquipped < 0) {
+		return Plugin_Continue;
+	}
+
+	float m_vecAngles[3];
+	m_vecAngles[0] = TE_ReadFloat("m_vecAngles[0]");
+	m_vecAngles[1] = TE_ReadFloat("m_vecAngles[1]");
+
+	// int m_iWeaponID = TE_ReadNum("m_iWeaponID");
+	// int m_iMode     = TE_ReadNum("m_iMode");
+	// TODO: Use above vars to determine how many bullets to fire, currently only one is fired
+
+
+	int m_iSeed    = TE_ReadNum("m_iSeed");
+
+	float m_flSpread = TE_ReadFloat("m_flSpread");
+
+	// Here we recreate what normally happens on the client-side
+	SetRandomSeed(++m_iSeed);
+	float x = GetRandomFloat(-0.5, 0.5) + GetRandomFloat(-0.5, 0.5);
+	float y = GetRandomFloat(-0.5, 0.5) + GetRandomFloat(-0.5, 0.5);
+	Paintball_FireBullets(m_iPlayer, m_vecOrigin, m_vecAngles, m_flSpread, x, y, m_iEquipped);
 
 	return Plugin_Continue;
 }
+
+void Paintball_FireBullets(int client, float vecSrc[3], float shootAngles[3], float vecSpread, float x, float y, int m_iEquipped)
+{
+	float vecDirShooting[3], vecRight[3], vecUp[3];
+	GetAngleVectors(shootAngles, vecDirShooting, vecRight, vecUp);
+
+	// add the spray
+	float vecDir[3];
+	vecDir[0] = vecDirShooting[0] + x * vecSpread * vecRight[0] + y * vecSpread * vecUp[0];
+	vecDir[1] = vecDirShooting[1] + x * vecSpread * vecRight[1] + y * vecSpread * vecUp[1];
+	vecDir[2] = vecDirShooting[2] + x * vecSpread * vecRight[2] + y * vecSpread * vecUp[2];
+
+	NormalizeVector(vecDir, vecDir);
+
+	float flMaxRange = 8000.0;
+
+	// max bullet range is 8000 units
+	float vecEnd[3];
+	vecEnd[0] = vecSrc[0] + vecDir[0] * flMaxRange;
+	vecEnd[1] = vecSrc[1] + vecDir[1] * flMaxRange;
+	vecEnd[2] = vecSrc[2] + vecDir[2] * flMaxRange;
+
+	TR_TraceRayFilter(vecSrc, vecEnd, MASK_SOLID | CONTENTS_DEBRIS | CONTENTS_HITBOX, RayType_EndPoint, Paintball_IgnoreOneEnt, client);
+
+	float m_fImpact[3];
+	TR_GetEndPosition(m_fImpact);
+
+	new m_iData = Store_GetDataIndex(m_iEquipped);
+		
+	TE_Start("World Decal");
+	TE_WriteVector("m_vecOrigin", m_fImpact);
+	TE_WriteNum("m_nIndex", g_iPaintballDecalIDs[m_iData][GetRandomInt(0, g_iPaintballDecals[m_iData]-1)]);
+	TE_SendToAll();
+
+}
+
+bool Paintball_IgnoreOneEnt(int entity, int contentsMask, int ignore)
+{
+	return entity != ignore;
+}
+

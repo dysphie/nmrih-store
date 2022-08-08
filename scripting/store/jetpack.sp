@@ -10,13 +10,11 @@ new g_cvarFuel = -1;
 new g_cvarRegen = -1;
 new g_cvarMinimum = -1;
 new g_cvarForce = -1;
-new g_cvarCommand = -1;
+//new g_cvarCommand = -1;
 
 new Float:g_fFuel[MAXPLAYERS+1];
 new Float:g_fTime[MAXPLAYERS+1];
 new Float:g_fLastHUDTime[MAXPLAYERS+1];
-
-new bool:g_bJetpacking[MAXPLAYERS+1]={false,...};
 
 #if defined STANDALONE_BUILD
 public OnPluginStart()
@@ -26,34 +24,18 @@ public Jetpack_OnPluginStart()
 {
 	Store_RegisterHandler("jetpack", "", Jetpack_OnMapStart, Jetpack_Reset, Jetpack_Config, Jetpack_Equip, Jetpack_Remove, true);
 
-	g_cvarFuel = RegisterConVar("sm_store_jetpack_fuel", "1.0", "A full fuel tank, in seconds.", TYPE_FLOAT);
+	g_cvarFuel = RegisterConVar("sm_store_jetpack_fuel", "10.0", "A full fuel tank, in seconds.", TYPE_FLOAT);
 	g_cvarRegen = RegisterConVar("sm_store_jetpack_regen", "0.1", "Fuel in seconds regenerated per second.", TYPE_FLOAT);
 	g_cvarMinimum = RegisterConVar("sm_store_jetpack_minimum", "0.1", "Minimum amount of fuel in seconds needed to start the jetpack.", TYPE_FLOAT);
 	g_cvarForce = RegisterConVar("sm_store_jetpack_force", "12.0", "Lifting velocity.", TYPE_FLOAT);
-	g_cvarCommand = RegisterConVar("sm_store_jetpack_command", "jetpack", "Command for the jetpack. +/- will be applied to it for toggling", TYPE_STRING);
 }
 
 public Jetpack_OnMapStart()
 {
 }
 
-public Jetpack_OnConfigsExecuted()
-{
-	new String:m_szCommand[64];
-	strcopy(m_szCommand[1], sizeof(m_szCommand)-1, g_eCvars[g_cvarCommand].sCache);
-	m_szCommand[0]='+';
-	RegConsoleCmd(m_szCommand, Command_JetpackOn);
-	m_szCommand[0]='-';
-	RegConsoleCmd(m_szCommand, Command_JetpackOff);
-}
-
 public Jetpack_Reset()
 {
-}
-
-public Jetpack_OnClientConnected(client)
-{
-	g_bJetpacking[client]=false;
 }
 
 public Jetpack_Config(&Handle:kv, itemid)
@@ -71,18 +53,6 @@ public Jetpack_Remove(client, id)
 {
 }
 
-public Action:Command_JetpackOn(client, args)
-{
-	g_bJetpacking[client]=true;
-	return Plugin_Handled;
-}
-
-public Action:Command_JetpackOff(client, args)
-{
-	g_bJetpacking[client]=false;
-	return Plugin_Handled;
-}
-
 #if defined STANDALONE_BUILD
 public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:angles[3], &weapon)
 #else
@@ -98,7 +68,7 @@ public Jetpack_OnPlayerRunCmd(client, buttons)
 #endif
 
 	new Float:m_fTime = GetGameTime();	 
-	if (g_bJetpacking[client])
+	if (buttons & IN_JUMP)
 	{
 		if (g_fFuel[client] > g_eCvars[g_cvarMinimum].aCache)
 		{

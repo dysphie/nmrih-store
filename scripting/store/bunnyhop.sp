@@ -57,17 +57,22 @@ public Action:Bunnyhop_OnPlayerRunCmd(client, &buttons)
 	if(m_iEquipped < 0)
 		return Plugin_Continue;
 
-	new m_iWater = GetEntProp(client, Prop_Data, "m_nWaterLevel");
 	if (IsPlayerAlive(client))
+    {
 		if (buttons & IN_JUMP)
-			if (m_iWater <= 1)
+		{
+			if (!(GetEntityFlags(client) & FL_ONGROUND))
+			{
 				if (!(GetEntityMoveType(client) & MOVETYPE_LADDER))
 				{
-					if(!GAME_TF2)
-						SetEntPropFloat(client, Prop_Send, "m_flStamina", 0.0);
-					if (!(GetEntityFlags(client) & FL_ONGROUND))
+					if (GetEntProp(client, Prop_Data, "m_nWaterLevel") <= 1)
+					{
 						buttons &= ~IN_JUMP;
+					}
 				}
+			}
+		}
+    }
 
 	return Plugin_Continue;
 }

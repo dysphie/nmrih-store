@@ -153,7 +153,6 @@ new PublicChatTrigger = 0;
 #include "store/grenskins.sp"
 #include "store/grentrails.sp"
 #include "store/weaponcolors.sp"
-#include "store/tfsupport.sp"
 #include "store/paintball.sp"
 #include "store/betting.sp"
 #include "store/watergun.sp"
@@ -295,7 +294,6 @@ public OnPluginStart()
 	GrenadeSkins_OnPluginStart();
 	GrenadeTrails_OnPluginStart();
 	WeaponColors_OnPluginStart();
-	TFSupport_OnPluginStart();
 	Paintball_OnPluginStart();
 	Watergun_OnPluginStart();
 	Betting_OnPluginStart();
@@ -662,7 +660,7 @@ public OnMapStart()
 
 public OnConfigsExecuted()
 {
-	Jetpack_OnConfigsExecuted();
+	//Jetpack_OnConfigsExecuted();
 	Jihad_OnConfigsExecuted();
 
 	// Connect to the database
@@ -684,8 +682,6 @@ public OnConfigsExecuted()
 public OnGameFrame()
 {
 	Trails_OnGameFrame();
-	TFWeapon_OnGameFrame();
-	TFHead_OnGameFrame();
 }
 #endif
 
@@ -1049,7 +1045,7 @@ public OnClientConnected(client)
 
 #if !defined STANDALONE_BUILD
 	PlayerSkins_OnClientConnected(client);
-	Jetpack_OnClientConnected(client);
+	//Jetpack_OnClientConnected(client);
 	ZRClass_OnClientConnected(client);
 	Pets_OnClientConnected(client);
 	Sprays_OnClientConnected(client);
@@ -2142,8 +2138,7 @@ public Action:Timer_CreditTimer(Handle:timer, any:userid)
 		return Plugin_Continue;
 	
 	decl m_iCredits;
-	new team = GetClientTeam(client);
-	if(2<=team<=3)
+	if(IsPlayerAlive(client))
 		m_iCredits = g_eCvars[g_cvarCreditAmountActive].aCache;
 	else
 		m_iCredits = g_eCvars[g_cvarCreditAmountInactive].aCache;
@@ -3180,4 +3175,9 @@ public Store_OnPaymentReceived(FriendID, quanity, Handle:data)
 			break;
 		}
 	}
+}
+
+bool IsPlayer(int client)
+{
+	return 0 < client <= MaxClients;
 }
