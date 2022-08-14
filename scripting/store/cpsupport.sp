@@ -82,42 +82,48 @@ bool MsgColors_Config(KeyValues& kv, int itemid)
 
 void NameTags_Equip(int client, int id)
 {
-	int equipped = Store_GetEquippedItem(client, "nametag");
-	if (0 <= equipped < g_NameTags.Length) {
-		Store_UnequipItem(client, equipped);
+	// Remove any existing name tags
+	int curEquipped = Store_GetEquippedItem(client, "nametag");
+	if (curEquipped >= 0)
+	{
+		Store_UnequipItem(client, curEquipped);
 	}
 
-	int index = Store_GetDataIndex(id);
-
-	char nameTag[MAX_NAMETAG_LENGTH];
-	g_NameTags.GetString(index, nameTag, sizeof(nameTag));
-
-	ChatProcessor_AddClientTag(client, nameTag);
+	// Add the new name tag
+	int newTagIdx = Store_GetDataIndex(id);
+	if (0 <= newTagIdx < g_NameTags.Length)
+	{
+		char nameTag[MAX_NAMETAG_LENGTH];
+		g_NameTags.GetString(newTagIdx, nameTag, sizeof(nameTag));
+		ChatProcessor_AddClientTag(client, nameTag);
+	}
 }
 
 void NameTags_Remove(int client, int id)
 {
 	int index = Store_GetDataIndex(id);
-
-	char nameTag[MAX_NAMETAG_LENGTH];
-	g_NameTags.GetString(index, nameTag, sizeof(nameTag));
-
-	ChatProcessor_RemoveClientTag(client, nameTag);
+	if (0 <= index < g_NameTags.Length) 
+	{
+		char nameTag[MAX_NAMETAG_LENGTH];
+		g_NameTags.GetString(index, nameTag, sizeof(nameTag));
+		ChatProcessor_RemoveClientTag(client, nameTag);
+	}
 }
 
 void NameColors_Equip(int client, int id)
 {
-	int equipped = Store_GetEquippedItem(client, "namecolor");
-	if (0 <= equipped < g_NameColors.Length) {
-		Store_UnequipItem(client, equipped);
+	int curEquipped = Store_GetEquippedItem(client, "namecolor");
+	if (curEquipped >= 0) {
+		Store_UnequipItem(client, curEquipped);
 	}
 
-	int index = Store_GetDataIndex(id);
-
-	char nameColor[MAX_COLORTAG_LENGTH];
-	g_NameColors.GetString(index, nameColor, sizeof(nameColor));
-
-	ChatProcessor_SetNameColor(client, nameColor);
+	int newColorIdx = Store_GetDataIndex(id);
+	if (0 <= newColorIdx < g_NameColors.Length)
+	{
+		char color[MAX_COLORTAG_LENGTH];
+		g_NameColors.GetString(newColorIdx, color, sizeof(color));
+		ChatProcessor_SetNameColor(client, color);
+	}
 }
 
 void NameColors_Remove(int client, int id)
@@ -127,18 +133,18 @@ void NameColors_Remove(int client, int id)
 
 void MsgColors_Equip(int client, int id)
 {
-	int equipped = Store_GetEquippedItem(client, "msgcolor");
-	if (0 <= equipped < g_MessageColors.Length) {
-		Store_UnequipItem(client, equipped);
+	int curEquipped = Store_GetEquippedItem(client, "msgcolor");
+	if (curEquipped >= 0) {
+		Store_UnequipItem(client, curEquipped);
 	}
 
-	int index = Store_GetDataIndex(id);
-
-	char msgColor[MAX_COLORTAG_LENGTH];
-	g_MessageColors.GetString(index, msgColor, sizeof(msgColor));
-
-	ChatProcessor_SetChatColor(client, msgColor);
-
+	int newColorIdx = Store_GetDataIndex(id);
+	if (0 <= newColorIdx < g_MessageColors.Length)
+	{
+		char color[MAX_COLORTAG_LENGTH];
+		g_MessageColors.GetString(newColorIdx, color, sizeof(color));
+		ChatProcessor_SetChatColor(client, color);
+	}
 }
 
 void MsgColors_Remove(int client, int id)
