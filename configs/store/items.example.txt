@@ -997,26 +997,20 @@
 	
 	"Player Skins"
 	{
-		"Terrorists"
+		"Duke Nukem"
 		{
-			"Duke Nukem"
-			{
-				"model" "models/player/kuristaja/duke4eva/duke/duke.mdl"
-				"team" "2"
-				"price" "120"
-				"type" "playerskin"
-			}
+			"model" "models/player/kuristaja/duke4eva/duke/duke.mdl"
+			"team" "0"
+			"price" "120"
+			"type" "playerskin"
 		}
-		
-		"Counter-Terrorists"
+
+		"Nick"
 		{
-			"Nick"
-			{
-				"model" "models/player/techknow/nick/nick.mdl"
-				"team" "3"
-				"price" "120"
-				"type" "playerskin"
-			}
+			"model" "models/player/techknow/nick/nick.mdl"
+			"team" "0"
+			"price" "120"
+			"type" "playerskin"
 		}
 	}
 	
