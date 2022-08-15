@@ -3,8 +3,7 @@
 Fork of Store by Zephyrus exclusively for No More Room in Hell. Contains bug fixes and new features
 
 This is a work-in-progress, known issues:
-- Name tags don't unequip properly
-- Players can get random trails assigned to them
+- Players can get random trails assigned to them, allegedly
 
 ## Requirements
 - Sourcemod 1.11 or higher
